@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login – Happy Tails</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐾</text></svg>">
+</head>
+
+<body class="bg-stone-50 min-h-screen flex items-center justify-center p-4">
+  <div id="toast-container"></div>
+
+  <div class="max-w-md w-full animate-fade-in">
+    <div class="text-center mb-8">
+      <div class="text-6xl mb-4">🔐</div>
+      <h1 class="text-3xl font-extrabold text-stone-800" style="font-family:'Poppins',sans-serif">Admin<span
+          class="text-orange-500"> Access</span></h1>
+      <p class="text-stone-500 mt-2">Please sign in to manage Happy Tails</p>
+    </div>
+
+    <div class="bg-white rounded-3xl p-8 shadow-xl border border-stone-100">
+      <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-6">
+        <div class="input-group">
+          <input id="a-email" type="email" placeholder=" " class="form-input" required autocomplete="email">
+          <label for="a-email">📧 Admin Email</label>
+        </div>
+        <div class="input-group">
+          <input id="a-password" type="password" placeholder=" " class="form-input" required
+            autocomplete="current-password">
+          <label for="a-password">🔒 Password</label>
+        </div>
+
+        <button type="submit" id="login-btn" class="btn-primary w-full justify-center text-lg py-4 group">
+          <span>Sign In to Dashboard</span>
+          <span class="group-hover:translate-x-1 transition-transform ml-2">➡️</span>
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <a href="index.html"
+          class="text-sm text-stone-400 hover:text-orange-500 transition-colors flex items-center justify-center gap-2">
+          <span>🏠</span> Back to Public Site
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      const email = document.getElementById('a-email').value;
+      const password = document.getElementById('a-password').value;
+
+      btn.disabled = true;
+      btn.innerHTML = 'Authenticating... ⏳';
+
+      try {
+        const res = await API.loginUser(email, password);
+
+        if (res.user.role !== 'admin') {
+          throw new Error('Access denied. You are not an administrator.');
+        }
+
+        Utils.showToast('Welcome back, Admin!', 'success');
+
+        // Short delay for the toast to be seen
+        setTimeout(() => {
+          window.location.href = 'admin/dashboard.html';
+        }, 1000);
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In to Dashboard <span class="ml-2">➡️</span>';
+        Utils.showToast(err.message, 'error');
+      }
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Login to your Happy Tails account to start your dog adoption journey."/>
+  <title>Login – Happy Tails</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐾</text></svg>"/>
+  <style>
+    .auth-bg {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 40%, #fed7aa 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-bg::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(251,146,60,0.2) 0%, transparent 70%);
+      animation: floatBlob 9s ease-in-out infinite alternate;
+    }
+    .auth-bg::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(253,186,116,0.25) 0%, transparent 70%);
+      animation: floatBlob 11s ease-in-out infinite alternate-reverse;
+    }
+    .password-toggle { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #78716c; transition: color 0.2s; user-select: none; }
+    .password-toggle:hover { color: #f97316; }
+    body.dark .auth-card { background: rgba(28,25,23,0.92) !important; border-color: rgba(249,115,22,0.2) !important; }
+  </style>
+</head>
+<body class="bg-orange-50">
+
+<div id="toast-container"></div>
+
+<!-- ── NAVBAR ── -->
+<nav class="px-4 sm:px-8 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-xl font-bold text-stone-800">
+      <span class="text-2xl">🐾</span>
+      <span>Happy<span class="text-orange-500">Tails</span></span>
+    </a>
+    <div class="flex items-center gap-3">
+      <button id="dark-toggle" class="w-9 h-9 rounded-full bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-all">
+        <span id="dark-icon">🌙</span>
+      </button>
+      <a href="dogs.html" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Browse Dogs</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── LOGIN PAGE ── -->
+<div class="auth-bg px-4 py-8 flex items-center justify-center" style="min-height:calc(100vh - 80px)">
+  <div class="w-full max-w-md relative z-10 fade-in">
+
+    <!-- Card -->
+    <div class="auth-card glass rounded-3xl p-8 sm:p-10 shadow-2xl">
+
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <div class="text-5xl mb-2 animate-bounce">🐾</div>
+        <h1 class="text-3xl font-extrabold text-stone-800" style="font-family:'Poppins',sans-serif">
+          Welcome<span class="text-orange-500"> Back</span>
+        </h1>
+        <p class="text-stone-500 text-sm mt-1">Login to your account to continue</p>
+      </div>
+
+      <!-- ── LOGIN FORM ── -->
+      <form id="login-form" onsubmit="handleLogin(event)" novalidate>
+
+        <!-- Email -->
+        <div class="input-group mb-5">
+          <input id="login-email" type="email" placeholder=" " class="form-input" autocomplete="email"/>
+          <label for="login-email">📧 Email Address</label>
+          <p id="login-email-err" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+
+        <!-- Password -->
+        <div class="input-group mb-2">
+          <div class="relative">
+            <input id="login-password" type="password" placeholder=" " class="form-input" style="padding-right:3.5rem" autocomplete="current-password"/>
+            <span class="password-toggle" onclick="togglePassword('login-password', this)">👁️</span>
+          </div>
+          <label for="login-password">🔒 Password</label>
+          <p id="login-pass-err" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+
+        <!-- Forgot -->
+        <div class="text-right mb-8">
+          <a href="#" class="text-orange-500 text-sm hover:underline font-medium">Forgot password?</a>
+        </div>
+
+        <!-- Submit -->
+        <button id="login-btn" type="submit" class="btn-primary w-full justify-center text-lg py-4 transition-all transform hover:scale-[1.02] active:scale-95 shadow-xl">
+          <span id="login-btn-text">Login to Account 🐾</span>
+          <span id="login-spinner" class="hidden ml-2" style="width:20px;height:20px;border:3px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite"></span>
+        </button>
+
+        <p class="text-center text-stone-500 text-sm mt-8">
+          Don't have an account?
+          <a href="register.html" class="text-orange-500 font-bold hover:underline">Register now</a>
+        </p>
+      </form>
+
+    </div><!-- /card -->
+
+    <!-- Trust -->
+    <div class="flex justify-center gap-6 mt-8 text-stone-400 text-xs">
+      <span>🔒 Secure & Encrypted</span>
+      <span>🐾 Free Account</span>
+      <span>✅ Satisfaction Guaranteed</span>
+    </div>
+  </div>
+</div>
+
+<div id="public-footer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/footer.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Utils.initPage();
+  // Show hero fade-in
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 150);
+
+  // If already logged in
+  if (API.getToken()) {
+    const user = API.getUser();
+    Utils.showToast('You are already logged in! 🐾', 'info');
+    setTimeout(() => {
+      if (user && user.role === 'admin') {
+        window.location.href = 'admin/dashboard.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+    }, 1500);
+  }
+});
+
+// ── Password Toggle ─────────────────────────────────────────
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isPass = input.type === 'password';
+  input.type = isPass ? 'text' : 'password';
+  btn.textContent = isPass ? '🙈' : '👁️';
+}
+
+// ── Validation Helpers ──────────────────────────────────────
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('hidden');
+}
+function setInputState(id, state) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('error','success');
+  if (state) el.classList.add(state);
+}
+
+// ── Login Handler ───────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  clearErr('login-email-err'); clearErr('login-pass-err');
+  
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  let valid = true;
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showErr('login-email-err', 'Please enter a valid email address');
+    setInputState('login-email','error'); valid = false;
+  } else { setInputState('login-email','success'); }
+
+  if (!password || password.length < 6) {
+    showErr('login-pass-err', 'Password must be at least 6 characters');
+    setInputState('login-password','error'); valid = false;
+  } else { setInputState('login-password','success'); }
+
+  if (!valid) return;
+
+  // Loading state
+  const btn = document.getElementById('login-btn');
+  const btnText = document.getElementById('login-btn-text');
+  const spinner = document.getElementById('login-spinner');
+
+  btn.disabled = true;
+  btnText.textContent = 'Authenticating...';
+  spinner.classList.remove('hidden');
+
+  try {
+    await API.loginUser(email, password);
+    const user = API.getUser();
+    Utils.showToast('Welcome back to Happy Tails! 🐾', 'success');
+    setTimeout(() => {
+      if (user && user.role === 'admin') {
+        window.location.href = 'admin/dashboard.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+    }, 1500);
+  } catch (err) {
+    Utils.showToast(err.message || 'Login failed. Check your credentials.', 'error');
+    setInputState('login-email','error');
+    setInputState('login-password','error');
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'Login to Account 🐾';
+    spinner.classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>

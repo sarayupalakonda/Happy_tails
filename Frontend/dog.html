@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Meet this adorable dog and start your adoption journey at Happy Tails."/>
+  <title>Dog Profile – Happy Tails</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐾</text></svg>"/>
+  <style>
+    .thumb-btn { transition: all 0.2s ease; }
+    .thumb-btn:hover { transform: scale(1.05); }
+    .personality-badge { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; padding: 6px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 500; }
+    body.dark .personality-badge { background: #292524; color: #fdba74; border-color: #44403c; }
+    #dog-main-img { transition: transform 0.5s ease; }
+    .img-container:hover #dog-main-img { transform: scale(1.05); }
+  </style>
+</head>
+<body class="bg-orange-50">
+
+<div id="toast-container"></div>
+
+<!-- ── NAVBAR ── -->
+<nav class="px-4 sm:px-8 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-xl font-bold text-stone-800">
+      <span class="text-2xl">🐾</span>
+      <span>Happy<span class="text-orange-500">Tails</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="index.html"  class="nav-link text-stone-600 hover:text-orange-500">Home</a>
+      <a href="dogs.html"   class="nav-link text-stone-600 hover:text-orange-500">Find Dogs</a>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <button id="dark-toggle" class="w-9 h-9 rounded-full bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-all">
+        <span id="dark-icon">🌙</span>
+      </button>
+      <div data-auth-nav="logged-out" class="flex items-center gap-2">
+        <a href="login.html" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Sign Up</a>
+      </div>
+      <div data-auth-nav="logged-in" class="flex items-center gap-2" style="display:none">
+        <button onclick="API.logoutUser()" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Logout</button>
+      </div>
+    </div>
+    <button id="hamburger-btn" class="hamburger md:hidden">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div id="mobile-menu" class="md:hidden">
+    <div class="flex flex-col gap-3 pt-4 pb-2 px-2 border-t border-orange-100 mt-3">
+      <a href="index.html" class="nav-link text-stone-700 font-medium py-2">🏠 Home</a>
+      <a href="dogs.html"  class="nav-link text-stone-700 font-medium py-2">🐕 Find Dogs</a>
+      <div class="flex gap-2 pt-2">
+        <a href="login.html" class="btn-secondary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Sign Up</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── BREADCRUMB ── -->
+<div class="max-w-7xl mx-auto px-4 sm:px-8 py-6">
+  <div class="flex items-center gap-2 text-sm text-stone-500">
+    <a href="index.html" class="hover:text-orange-500 transition-colors">Home</a>
+    <span>›</span>
+    <a href="dogs.html" class="hover:text-orange-500 transition-colors">Find Dogs</a>
+    <span>›</span>
+    <span id="breadcrumb-name" class="text-orange-500 font-medium">Dog Profile</span>
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="max-w-7xl mx-auto px-4 sm:px-8 pb-20">
+
+  <!-- Loading State -->
+  <div id="loading-state" class="flex flex-col items-center justify-center py-20">
+    <div class="spinner mb-4"></div>
+    <p class="text-stone-500 animate-pulse">Loading dog details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-state" class="hidden text-center py-20">
+    <div class="text-6xl mb-4">😿</div>
+    <h2 class="text-2xl font-bold text-stone-800 mb-2">Dog Not Found</h2>
+    <p class="text-stone-500 mb-6">We couldn't find the dog you're looking for.</p>
+    <a href="dogs.html" class="btn-primary">Browse All Dogs</a>
+  </div>
+
+  <!-- Detail Content -->
+  <div id="dog-content" class="hidden fade-in">
+    <div class="grid lg:grid-cols-2 gap-12 items-start">
+
+      <!-- Left: Visuals -->
+      <div>
+        <!-- Main Image -->
+        <div class="img-container rounded-3xl overflow-hidden shadow-2xl relative mb-6">
+          <img id="dog-img" src="" alt="" class="w-full h-[400px] sm:h-[500px] object-cover"/>
+          <div id="dog-status" class="dog-card-badge" style="top:20px;right:20px;font-size:0.8rem;padding:6px 14px">Available</div>
+        </div>
+
+        <!-- Video Preview -->
+        <div id="video-section" class="hidden">
+           <h3 class="text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
+             <span>🎥</span> Video Preview
+           </h3>
+           <div class="rounded-2xl overflow-hidden bg-stone-900 aspect-video shadow-lg flex items-center justify-center relative group cursor-pointer">
+              <img id="video-placeholder" src="" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform" />
+              <div class="relative z-10 w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border-2 border-white/50 group-hover:scale-110 transition-transform">
+                <span class="text-white text-2xl ml-1">▶️</span>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Right: Info -->
+      <div class="lg:sticky lg:top-24">
+        <div class="mb-8">
+          <h1 id="dog-name" class="text-4xl sm:text-5xl font-black text-stone-800 mb-4" style="font-family:'Poppins',sans-serif"></h1>
+          
+          <!-- Key Stats -->
+          <div class="flex flex-wrap gap-4 mb-6">
+             <div class="bg-white rounded-2xl px-5 py-3 shadow-sm border border-orange-100 flex items-center gap-3">
+               <span class="text-2xl">🐕</span>
+               <div>
+                 <p class="text-xs text-stone-400 font-bold uppercase tracking-wider">Breed</p>
+                 <p id="dog-breed" class="text-stone-700 font-bold"></p>
+               </div>
+             </div>
+             <div class="bg-white rounded-2xl px-5 py-3 shadow-sm border border-orange-100 flex items-center gap-3">
+               <span class="text-2xl">🎂</span>
+               <div>
+                 <p class="text-xs text-stone-400 font-bold uppercase tracking-wider">Age</p>
+                 <p id="dog-age" class="text-stone-700 font-bold"></p>
+               </div>
+             </div>
+             <div class="bg-white rounded-2xl px-5 py-3 shadow-sm border border-orange-100 flex items-center gap-3">
+               <span class="text-2xl">📍</span>
+               <div>
+                 <p class="text-xs text-stone-400 font-bold uppercase tracking-wider">Location</p>
+                 <p id="dog-location" class="text-stone-700 font-bold"></p>
+               </div>
+             </div>
+             <div class="bg-white rounded-2xl px-5 py-3 shadow-sm border border-orange-100 flex items-center gap-3">
+               <span class="text-2xl">₹</span>
+               <div>
+                 <p class="text-xs text-stone-400 font-bold uppercase tracking-wider">Adoption Fee</p>
+                 <p id="dog-fee" class="text-stone-700 font-bold"></p>
+               </div>
+             </div>
+          </div>
+
+          <!-- Badges -->
+          <div class="flex flex-wrap gap-2 mb-8">
+             <div id="vax-badge" class="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold border border-green-200">
+               <span>✓</span> Vaccinated
+             </div>
+             <div id="neutered-badge" class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-200">
+               <span>✓</span> Neutered
+             </div>
+             <div id="trained-badge" class="flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg text-sm font-bold border border-purple-200">
+               <span>✓</span> House Trained
+             </div>
+          </div>
+
+          <div class="section-divider ml-0"></div>
+
+          <!-- Description -->
+          <div class="mb-10">
+            <h3 class="text-lg font-bold text-stone-800 mb-3">About Me</h3>
+            <p id="dog-desc" class="text-stone-600 leading-relaxed text-lg"></p>
+          </div>
+
+          <!-- Personality -->
+          <div class="mb-10">
+            <h3 class="text-lg font-bold text-stone-800 mb-3">Personality</h3>
+            <div id="dog-tags" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <!-- Rescue Details (Conditional) -->
+          <div id="rescue-section" class="hidden mb-10 p-6 bg-orange-100/50 rounded-[2rem] border border-orange-200/50">
+             <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center text-white text-xl">🐾</div>
+                <div>
+                   <h3 class="font-black text-xl text-stone-800">Rescue Story</h3>
+                   <p class="text-xs text-orange-600 font-bold uppercase tracking-widest">Saving a life</p>
+                </div>
+             </div>
+             
+             <p id="rescue-story" class="text-stone-600 leading-relaxed mb-6 italic"></p>
+             
+             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white/60 p-4 rounded-2xl border border-white">
+                   <p class="text-[10px] text-stone-400 font-black uppercase tracking-tighter mb-1">Rescue Location</p>
+                   <p id="rescue-loc" class="text-stone-700 font-bold text-sm"></p>
+                </div>
+                <div class="bg-white/60 p-4 rounded-2xl border border-white">
+                   <p class="text-[10px] text-stone-400 font-black uppercase tracking-tighter mb-1">Health Status</p>
+                   <p id="rescue-health" class="text-emerald-600 font-bold text-sm"></p>
+                </div>
+             </div>
+             
+             <div class="bg-orange-500/10 p-4 rounded-2xl border border-orange-500/20">
+                <h4 class="font-bold text-orange-800 text-sm mb-1">Adopt and give this dog a safe life ❤️</h4>
+                <p class="text-stone-600 text-xs">Your contribution helps us continue our rescue mission and save more dogs from the streets.</p>
+             </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-orange-100">
+             <button id="adopt-btn" class="btn-primary flex-1 justify-center py-4 text-lg">Adopt Me ❤️</button>
+             <button id="favorite-btn" class="btn-secondary px-8 py-4">Save for later</button>
+          </div>
+          
+          <p class="text-center text-stone-400 text-xs mt-6 flex items-center justify-center gap-2">
+            🔒 Secure adoption process protected by Happy Tails
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<div id="public-footer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/footer.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  Utils.initPage();
+  
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  console.log("📍 Dog Detail Page Loaded");
+  console.log("🔍 Extracting ID from URL:", id);
+
+  if (!id) {
+    console.error("❌ No ID found in URL parameters");
+    showError();
+    return;
+  }
+
+  try {
+    console.log("📡 Fetching dog data from API...");
+    const data = await API.fetchDog(id);
+    console.log("✅ API Response:", data);
+    
+    const dog = data.dog || data; // Handle different API shapes
+    if (!dog || (!dog.id && !dog._id)) {
+      throw new Error('Invalid dog data received');
+    }
+    
+    renderDog(dog);
+  } catch (err) {
+    console.warn("⚠️ API Fetch failed or returned invalid data. Falling back to demo data.", err.message);
+    showError();
+  }
+});
+
+function renderDog(dog) {
+  console.log("🎨 Rendering Dog:", dog.name, "(ID:", dog._id || dog.id, ")");
+  
+  document.getElementById('loading-state').classList.add('hidden');
+  const content = document.getElementById('dog-content');
+  content.classList.remove('hidden');
+  setTimeout(() => content.classList.add('visible'), 50);
+
+  // Set text
+  document.getElementById('dog-name').textContent = dog.name;
+  document.getElementById('breadcrumb-name').textContent = dog.name;
+  document.getElementById('dog-breed').textContent = dog.breed || 'Mixed Breed';
+  document.getElementById('dog-age').textContent = dog.age ? `${dog.age} Years` : 'Unknown';
+  document.getElementById('dog-location').textContent = dog.location || 'Unknown';
+  document.getElementById('dog-fee').textContent = Utils.formatAdoptionFee(dog.adoptionFee);
+  document.getElementById('dog-desc').textContent = dog.description || `Meet ${dog.name}, a wonderful ${dog.breed || 'dog'} waiting for a forever home. They are full of love and ready to become your best friend.`;
+  document.getElementById('dog-status').textContent = dog.status || 'Available';
+
+  // Set Image
+  const img = dog.image || dog.imageUrl || '';
+  const dogImg = document.getElementById('dog-img');
+  if (!img) dogImg.classList.add('hidden');
+  dogImg.src = img;
+  dogImg.onerror = () => {
+    dogImg.removeAttribute('src');
+    dogImg.alt = 'Image unavailable';
+  };
+
+  // Set Tags
+  const tagsContainer = document.getElementById('dog-tags');
+  const tags = dog.personalityTags || dog.tags || dog.traits || [];
+  tagsContainer.innerHTML = tags.map(t => `<span class="personality-badge">${t}</span>`).join('');
+
+  // Handle badges
+  const badges = {
+    'vax-badge': dog.isVaccinated ?? true,
+    'neutered-badge': dog.isNeutered ?? true,
+    'trained-badge': dog.isTrained ?? true
+  };
+  
+  Object.keys(badges).forEach(bid => {
+    const el = document.getElementById(bid);
+    if (el) badges[bid] ? el.classList.remove('hidden') : el.classList.add('hidden');
+  });
+
+  // Adopt Button
+  document.getElementById('adopt-btn').onclick = () => {
+    window.location.href = `adopt.html?id=${dog._id || dog.id}&name=${encodeURIComponent(dog.name)}`;
+  };
+
+  // Rescue Mission Details
+  const isRescue = dog.type === 'street' || dog.type === 'rescue';
+  const rescueSec = document.getElementById('rescue-section');
+  if (rescueSec) {
+    if (isRescue) {
+      rescueSec.classList.remove('hidden');
+      document.getElementById('rescue-story').textContent = dog.rescueStory || 'This brave dog was rescued from the streets and is now looking for a loving home.';
+      document.getElementById('rescue-loc').textContent = dog.rescueLocation || 'Street Rescue';
+      document.getElementById('rescue-health').textContent = dog.healthStatus || 'Recovered & Healthy';
+    } else {
+      rescueSec.classList.add('hidden');
+    }
+  }
+}
+
+function showError() {
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('error-state').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

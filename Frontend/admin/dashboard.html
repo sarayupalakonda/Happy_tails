@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel – Happy Tails</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐾</text></svg>">
+</head>
+
+<body class="admin-layout">
+  <div id="toast-container"></div>
+
+  <!-- ADMIN AUTH GUARD -->
+  <div id="auth-loader" class="fixed inset-0 bg-white z-[100] flex items-center justify-center transition-opacity duration-500">
+    <div class="text-center">
+      <div class="text-4xl animate-bounce mb-4">🐾</div>
+      <p class="text-stone-400 font-medium animate-pulse">Verifying credentials...</p>
+    </div>
+  </div>
+
+  <script>
+    function checkAuth() {
+      const token = localStorage.getItem('ht_token');
+      let user = {};
+      try { user = JSON.parse(localStorage.getItem('ht_user') || '{}'); } catch(e){}
+      const loader = document.getElementById('auth-loader');
+
+      if (!token) {
+        window.location.href = '../admin-login.html';
+        return;
+      }
+
+      if (user.role && user.role !== 'admin') {
+        alert("Access Denied: Administrative privileges required.");
+        window.location.href = '../index.html';
+        return;
+      }
+
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 500);
+      }, 600);
+    }
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(checkAuth, 300); });
+  </script>
+
+  <div class="admin-shell">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="admin-sidebar hidden md:flex flex-col">
+      <div class="admin-sidebar-header admin-logo cursor-pointer" id="adminLogo">
+        <a href="/admin/dashboard.html" class="flex items-center gap-2 text-xl font-bold text-stone-800">
+          <span class="text-2xl">🐾</span>
+          <span>Happy<span class="text-orange-500">Tails</span></span>
+        </a>
+      </div>
+      <nav class="flex flex-col gap-2 flex-1 px-2">
+        <button id="btn-dashboard" onclick="showSection('dashboard')" class="admin-nav-item nav-item active flex items-center gap-3 p-3 text-stone-600 font-medium">
+          <span class="text-xl">📊</span> Dashboard
+        </button>
+        <button id="btn-adoptions" onclick="showSection('adoptions')" class="admin-nav-item nav-item flex items-center gap-3 p-3 text-stone-600 font-medium">
+          <span class="text-xl">📝</span> Applications
+        </button>
+        <button id="btn-dogs" onclick="showSection('dogs')" class="admin-nav-item nav-item flex items-center gap-3 p-3 text-stone-600 font-medium">
+          <span class="text-xl">🐕</span> Manage Dogs
+        </button>
+        <button id="btn-contacts" onclick="showSection('contacts')" class="admin-nav-item nav-item flex items-center gap-3 p-3 text-stone-600 font-medium">
+          <span class="text-xl">📩</span> Contacts
+        </button>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <button onclick="adminLogout()" class="admin-logout-btn">
+          <span>↪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="admin-main flex flex-col">
+      <!-- HEADER -->
+      <header class="admin-page-header admin-header flex justify-between items-center">
+        <div class="flex items-center gap-4">
+          <button onclick="document.getElementById('sidebar').classList.toggle('hidden')" class="md:hidden text-2xl text-stone-600 hover:text-orange-500">
+            ☰
+          </button>
+          <div>
+            <h2 id="section-title" class="text-xl md:text-2xl font-extrabold text-stone-800 tracking-tight">Overview Dashboard</h2>
+            <p class="text-sm text-stone-500 font-medium hidden sm:block">Welcome back, <span id="admin-name" class="text-orange-500 font-bold">Admin</span> 👋</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-6">
+          <div class="relative group cursor-pointer" id="profileDropdownContainer">
+            <div id="profileAvatar" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 border-2 border-white shadow-md flex items-center justify-center text-xl hover:shadow-lg transition-shadow">
+              👩‍💼
+            </div>
+            <div id="profileDropdown" class="admin-profile-dropdown absolute right-0 top-14 mt-2 w-56 opacity-0 invisible transition-all duration-300 transform origin-top-right scale-95">
+              <div class="p-2 flex flex-col gap-1">
+                <button onclick="openProfileModal()" class="w-full text-left px-4 py-2 text-sm text-stone-600 hover:bg-orange-50 hover:text-orange-500 rounded-lg transition-colors">Profile Settings</button>
+                <button onclick="adminLogout()" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors">Sign Out</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- SECTIONS -->
+      <main id="content-area" class="admin-content flex-1">
+
+        <!-- DASHBOARD SECTION -->
+        <section id="sec-dashboard" class="space-y-8 animate-fade-in">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div class="admin-card p-6 border-t-4 border-blue-400">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl shadow-sm">📄</span>
+                <p class="text-stone-500 text-xs font-bold tracking-widest uppercase">Total Apps</p>
+              </div>
+              <h3 id="stat-adoptions" class="text-4xl font-extrabold text-stone-800">--</h3>
+            </div>
+            <div class="admin-card p-6 border-t-4 border-green-400">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-xl shadow-sm">✅</span>
+                <p class="text-stone-500 text-xs font-bold tracking-widest uppercase">Approved</p>
+              </div>
+              <h3 id="stat-approved" class="text-4xl font-extrabold text-stone-800">--</h3>
+            </div>
+            <div class="admin-card p-6 border-t-4 border-orange-400">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl shadow-sm">⏳</span>
+                <p class="text-stone-500 text-xs font-bold tracking-widest uppercase">Pending</p>
+              </div>
+              <h3 id="stat-pending" class="text-4xl font-extrabold text-stone-800">--</h3>
+            </div>
+            <div class="admin-card p-6 border-t-4 border-red-400">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-xl shadow-sm">❌</span>
+                <p class="text-stone-500 text-xs font-bold tracking-widest uppercase">Rejected</p>
+              </div>
+              <h3 id="stat-rejected" class="text-4xl font-extrabold text-stone-800">--</h3>
+            </div>
+            
+            <div class="admin-card p-6 col-span-1 sm:col-span-2">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl shadow-sm">🐾</span>
+                <p class="text-stone-500 text-xs font-bold tracking-widest uppercase">Total Dogs</p>
+              </div>
+              <h3 id="stat-dogs" class="text-4xl font-extrabold text-stone-800">--</h3>
+            </div>
+            <div class="admin-card p-6 col-span-1 sm:col-span-2">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-10 h-10 rounded-xl bg-teal-50 text-teal-500 flex items-center justify-center text-xl shadow-sm">👥</span>
+                <p class="text-stone-500 text-xs font-bold tracking-widest uppercase">Total Users</p>
+              </div>
+              <h3 id="stat-users" class="text-4xl font-extrabold text-stone-800">--</h3>
+            </div>
+          </div>
+
+          <!-- RECENT ACTIVITY -->
+          <div class="admin-card p-4 md:p-8">
+            <h3 class="text-lg font-bold mb-6">Recent Applications</h3>
+            <div class="overflow-x-auto">
+              <table class="admin-table text-left">
+                <thead>
+                  <tr>
+                    <th>Applicant</th>
+                    <th>Pet</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-adoptions-body">
+                  <tr><td colspan="4" class="py-10 text-center text-stone-400">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 gap-6">
+            <div class="admin-card p-6 md:p-8">
+              <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                  <p class="text-orange-500 text-xs font-black uppercase tracking-widest mb-2">Inventory Snapshot</p>
+                  <h3 class="text-lg font-extrabold text-stone-800">Recent Dogs</h3>
+                </div>
+                <span class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center text-2xl shadow-sm">🐾</span>
+              </div>
+              <p class="text-stone-500 text-sm leading-relaxed mb-6">Review the latest dog inventory and keep adoption profiles polished, current, and ready for applicants.</p>
+              <button onclick="showSection('dogs')" class="admin-btn admin-btn-primary">Open Manage Dogs</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADOPTIONS SECTION -->
+        <section id="sec-adoptions" class="hidden animate-fade-in space-y-6">
+          <div class="admin-card p-4 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-extrabold text-stone-800">Manage Adoption Requests</h3>
+              <button onclick="loadAdoptions()" class="admin-btn bg-stone-100 text-stone-600 hover:bg-stone-200">Refresh 🔄</button>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-stone-100">
+              <table class="admin-table text-left">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Dog</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adoptions-table-body">
+                  <tr><td colspan="5" class="py-10 text-center text-stone-400">Loading applications...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- DOGS SECTION -->
+        <section id="sec-dogs" class="hidden animate-fade-in space-y-6">
+          <div class="flex justify-between items-center">
+            <h3 class="text-2xl font-extrabold text-stone-800">Pet Inventory</h3>
+            <button onclick="toggleDogModal()" class="admin-btn admin-btn-primary flex items-center gap-2">
+              <span>➕</span><span>Add New Dog</span>
+            </button>
+          </div>
+          <div id="dogs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="col-span-full py-10 text-center text-stone-400">Loading pet inventory...</div>
+          </div>
+        </section>
+
+        <!-- CONTACTS SECTION -->
+        <section id="sec-contacts" class="hidden animate-fade-in space-y-6">
+          <div class="admin-card p-4 md:p-8">
+            <div class="flex justify-between items-center mb-6">
+              <div>
+                <h3 class="text-xl font-extrabold text-stone-800">Contact Messages</h3>
+                <p class="text-sm text-stone-500 mt-1">Messages submitted from the public contact form.</p>
+              </div>
+              <button onclick="loadContacts()" class="admin-btn bg-stone-100 text-stone-600 hover:bg-stone-200">Refresh 🔄</button>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-stone-100">
+              <table class="admin-table text-left">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="contacts-table-body">
+                  <tr><td colspan="7" class="py-10 text-center text-stone-400">Loading contact messages...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT DOG MODAL -->
+  <div id="dog-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center z-[110] transition-opacity duration-300">
+    <div class="admin-modal w-full max-w-2xl p-8 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h3 id="modal-title" class="text-2xl font-extrabold text-stone-800">Add New Dog 🐾</h3>
+        <button onclick="toggleDogModal()" class="text-stone-400 hover:text-stone-800 text-2xl">&times;</button>
+      </div>
+      
+      <form id="dog-form" class="space-y-4">
+        <input type="hidden" id="edit-id">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="d-name" class="block text-sm font-medium text-stone-600 mb-1">Dog Name</label>
+            <input id="d-name" type="text" class="admin-input" required placeholder="e.g. Buddy">
+          </div>
+          <div>
+            <label for="d-breed" class="block text-sm font-medium text-stone-600 mb-1">Breed</label>
+            <input id="d-breed" type="text" class="admin-input" required placeholder="e.g. Golden Retriever">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label for="d-age" class="block text-sm font-medium text-stone-600 mb-1">Age (Years)</label>
+            <input id="d-age" type="number" class="admin-input" required placeholder="2">
+          </div>
+          <div>
+            <label for="d-gender" class="block text-sm font-medium text-stone-600 mb-1">Gender</label>
+            <select id="d-gender" class="admin-input">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label for="d-size" class="block text-sm font-medium text-stone-600 mb-1">Size</label>
+            <select id="d-size" class="admin-input">
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+              <option value="Extra Large">Extra Large</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="d-location" class="block text-sm font-medium text-stone-600 mb-1">Location</label>
+            <input id="d-location" type="text" class="admin-input" required placeholder="e.g. New York, NY">
+          </div>
+          <div>
+            <label for="d-adoptionFee" class="block text-sm font-medium text-stone-600 mb-1">Adoption Fee (₹)</label>
+            <input id="d-adoptionFee" type="number" class="admin-input" placeholder="25000">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="d-vaccinationStatus" class="block text-sm font-medium text-stone-600 mb-1">Vaccination Status</label>
+            <select id="d-vaccinationStatus" class="admin-input">
+              <option value="Vaccinated">Vaccinated</option>
+              <option value="Not Vaccinated">Not Vaccinated</option>
+              <option value="Partially Vaccinated">Partially Vaccinated</option>
+            </select>
+          </div>
+          <div>
+            <label for="d-urgencyLabel" class="block text-sm font-medium text-stone-600 mb-1">Urgency Label</label>
+            <input id="d-urgencyLabel" type="text" class="admin-input" placeholder="e.g. Urgent, Special Needs">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="d-type" class="block text-sm font-medium text-stone-600 mb-1">Dog Category</label>
+            <select id="d-type" class="admin-input" onchange="toggleRescueFields()">
+              <option value="pet">Pet Dog</option>
+              <option value="street">Street Dog</option>
+              <option value="rescue">Rescue Dog</option>
+            </select>
+          </div>
+          <div>
+            <label for="d-availabilityStatus" class="block text-sm font-medium text-stone-600 mb-1">Availability Status</label>
+            <select id="d-availabilityStatus" class="admin-input">
+              <option value="Available">Available</option>
+              <option value="Pending">Pending</option>
+              <option value="Adopted">Adopted</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Rescue Specific Fields (Hidden by default for Pets) -->
+        <div id="rescue-fields" class="hidden space-y-4 pt-4 border-t border-orange-100 mt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="d-rescueLocation" class="block text-sm font-medium text-stone-600 mb-1">Rescue Location</label>
+              <input id="d-rescueLocation" type="text" class="admin-input" placeholder="e.g. Near Charminar, Hyderabad">
+            </div>
+            <div>
+              <label for="d-healthStatus" class="block text-sm font-medium text-stone-600 mb-1">Health Status</label>
+              <input id="d-healthStatus" type="text" class="admin-input" placeholder="e.g. Fully Recovered">
+            </div>
+          </div>
+          <div>
+            <label for="d-rescueStory" class="block text-sm font-medium text-stone-600 mb-1">Rescue Story</label>
+            <textarea id="d-rescueStory" class="admin-input h-24" placeholder="Emotional story of the rescue..."></textarea>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="d-image" class="block text-sm font-medium text-stone-600 mb-1">Image URL</label>
+            <input id="d-image" type="text" class="admin-input" required>
+          </div>
+          <div>
+            <label for="d-imagePosition" class="block text-sm font-medium text-stone-600 mb-1">Image Position</label>
+            <select id="d-imagePosition" class="admin-input">
+              <option value="center">Center</option>
+              <option value="center top">Center Top</option>
+              <option value="center 30%">Center 30%</option>
+              <option value="center bottom">Center Bottom</option>
+            </select>
+          </div>
+          <div>
+            <label for="d-videoUrl" class="block text-sm font-medium text-stone-600 mb-1">Video URL</label>
+            <input id="d-videoUrl" type="text" class="admin-input">
+          </div>
+        </div>
+        <div>
+          <label for="d-tags" class="block text-sm font-medium text-stone-600 mb-1">Personality Tags (comma separated)</label>
+          <input id="d-tags" type="text" class="admin-input" placeholder="e.g. Playful, Energetic, Loyal">
+        </div>
+        <div>
+          <label for="d-desc" class="block text-sm font-medium text-stone-600 mb-1">Full Description</label>
+          <textarea id="d-desc" rows="3" class="admin-input" required></textarea>
+        </div>
+        <button type="submit" id="dog-submit-btn" class="w-full admin-btn admin-btn-primary py-3 text-lg mt-4">Save Pet Profile ✨</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW APPLICATION MODAL -->
+  <div id="viewModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center z-[110] transition-opacity duration-300">
+    <div class="admin-modal p-0 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col rounded-[28px]" id="viewModalBox">
+      <div class="p-6 border-b border-stone-100 flex justify-between items-center bg-white rounded-t-[28px] sticky top-0 z-10">
+        <h2 class="text-2xl font-extrabold text-stone-800">Application Details</h2>
+        <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 text-stone-500 hover:bg-red-100 hover:text-red-500 transition-colors">&times;</button>
+      </div>
+      <div id="modalContent" class="text-stone-700 overflow-y-auto p-6 bg-stone-50/50">
+        <!-- Content injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE SETTINGS MODAL -->
+  <div id="profileModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center z-[110] transition-opacity duration-300">
+    <div class="admin-modal p-0 w-full max-w-2xl overflow-hidden" id="profileModalBox">
+      <div class="admin-profile-hero">
+        <div class="admin-profile-avatar">👩‍💼</div>
+        <div class="min-w-0">
+          <p class="text-xs font-black uppercase tracking-widest text-orange-500 mb-1">Admin Profile</p>
+          <h2 id="profile-display-name" class="text-2xl font-extrabold text-stone-800 truncate">Profile Settings</h2>
+          <p id="profile-display-email" class="text-sm text-stone-500 truncate">Manage your dashboard identity</p>
+        </div>
+        <button onclick="closeProfileModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 text-stone-500 hover:bg-red-100 hover:text-red-500 transition-colors">&times;</button>
+      </div>
+      <form id="profile-form" onsubmit="handleProfileSubmit(event)" class="admin-profile-body space-y-5">
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div class="admin-profile-info-card">
+            <p>Name</p>
+            <strong id="profile-info-name">Admin</strong>
+          </div>
+          <div class="admin-profile-info-card">
+            <p>Email</p>
+            <strong id="profile-info-email">admin@happytails.com</strong>
+          </div>
+          <div class="admin-profile-info-card">
+            <p>Role</p>
+            <strong id="profile-info-role">Admin</strong>
+          </div>
+        </div>
+        <div class="admin-card p-5">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="font-extrabold text-stone-800">Edit Profile</h3>
+              <p class="text-xs text-stone-500 mt-1">Uses the existing admin profile form.</p>
+            </div>
+            <span class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center">✏️</span>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="p-name" class="block text-sm font-medium text-stone-600 mb-1">Full Name</label>
+              <input id="p-name" type="text" class="admin-input" required>
+            </div>
+            <div>
+              <label for="p-email" class="block text-sm font-medium text-stone-600 mb-1">Email Address</label>
+              <input id="p-email" type="email" class="admin-input" required>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card p-5">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="font-extrabold text-stone-800">Change Password</h3>
+              <p class="text-xs text-stone-500 mt-1">Leave blank to keep the current password.</p>
+            </div>
+            <span class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center">🔒</span>
+          </div>
+          <label for="p-password" class="block text-sm font-medium text-stone-600 mb-1">New Password (optional)</label>
+          <input id="p-password" type="password" class="admin-input" placeholder="Leave blank to keep current">
+        </div>
+        <div class="flex gap-3">
+          <button type="button" onclick="closeProfileModal()" class="flex-1 admin-btn bg-stone-100 text-stone-600 hover:bg-stone-200">Cancel</button>
+          <button type="submit" id="profile-submit-btn" class="flex-1 admin-btn admin-btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+
+</html>

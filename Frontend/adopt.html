@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Submit your adoption request for your chosen dog at Happy Tails Adoption Hub."/>
+  <title>Adoption Form – Happy Tails</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐾</text></svg>"/>
+</head>
+<body class="bg-orange-50">
+
+<div id="toast-container"></div>
+
+<!-- ── SUCCESS MODAL ── -->
+<div id="success-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div style="font-size:4rem;margin-bottom:1rem">🎉</div>
+    <h2 class="text-2xl font-extrabold text-stone-800 mb-3" style="font-family:'Poppins',sans-serif">
+      Application Submitted!
+    </h2>
+    <p class="text-stone-500 mb-2">
+      Your adoption application for <strong id="modal-dog-name" class="text-orange-500"></strong> has been received!
+    </p>
+    <p class="text-stone-400 text-sm mb-6">
+      Our team will review your application within 24–48 hours and contact you via email. 🐾
+    </p>
+    <div class="flex flex-col gap-3">
+      <a href="dogs.html" class="btn-primary w-full justify-center">Browse More Dogs</a>
+      <button onclick="Utils.closeModal('success-modal'); window.location.href='index.html'" class="btn-secondary w-full justify-center">Go Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── NAVBAR ── -->
+<nav class="px-4 sm:px-8 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-xl font-bold text-stone-800">
+      <span class="text-2xl">🐾</span>
+      <span>Happy<span class="text-orange-500">Tails</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="index.html"  class="nav-link text-stone-600 hover:text-orange-500">Home</a>
+      <a href="dogs.html"   class="nav-link text-stone-600 hover:text-orange-500">Find Dogs</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="dark-toggle" class="w-9 h-9 rounded-full bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-all">
+        <span id="dark-icon">🌙</span>
+      </button>
+      <div data-auth-nav="logged-out" class="flex items-center gap-2">
+        <a href="login.html" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Sign Up</a>
+      </div>
+      <div data-auth-nav="logged-in" class="flex items-center gap-2" style="display:none">
+        <button onclick="API.logoutUser()" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Logout</button>
+      </div>
+    </div>
+    <button id="hamburger-btn" class="hamburger md:hidden">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div id="mobile-menu" class="md:hidden">
+    <div class="flex flex-col gap-3 pt-4 pb-2 px-2 border-t border-orange-100 mt-3">
+      <a href="index.html" class="nav-link text-stone-700 font-medium py-2">🏠 Home</a>
+      <a href="dogs.html"  class="nav-link text-stone-700 font-medium py-2">🐕 Find Dogs</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="bg-gradient-to-r from-orange-500 to-amber-500 py-12 px-4 sm:px-8">
+  <div class="max-w-3xl mx-auto text-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-2" style="font-family:'Poppins',sans-serif">📋 Adoption Application</h1>
+    <p class="text-orange-100">Fill out this form and we'll be in touch within 24–48 hours</p>
+  </div>
+</div>
+
+<!-- ── FORM ── -->
+<main class="max-w-3xl mx-auto px-4 sm:px-8 py-12">
+
+  <!-- Dog Banner -->
+  <div id="dog-banner" class="glass rounded-2xl p-5 mb-8 flex items-center gap-4 fade-in">
+    <img id="banner-img" src="" alt="" class="w-20 h-20 rounded-xl object-cover shadow-md"/>
+    <div>
+      <p class="text-orange-500 text-sm font-semibold uppercase tracking-widest">Adopting</p>
+      <h2 id="banner-name" class="text-xl font-extrabold text-stone-800" style="font-family:'Poppins',sans-serif">Loading...</h2>
+      <p id="banner-breed" class="text-stone-500 text-sm"></p>
+    </div>
+    <a href="dogs.html" class="ml-auto text-stone-400 hover:text-orange-500 transition-colors text-sm">Change dog →</a>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="flex items-center mb-10 fade-in">
+    <div class="step-indicator active" id="prog-1">
+      <div class="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center text-sm font-bold">1</div>
+      <span class="text-xs text-orange-500 font-semibold mt-1">Personal</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-stone-200 mx-2" id="line-1-2"></div>
+    <div class="step-indicator" id="prog-2">
+      <div class="w-8 h-8 rounded-full bg-stone-200 text-stone-500 flex items-center justify-center text-sm font-bold" id="prog-2-circle">2</div>
+      <span class="text-xs text-stone-400 font-medium mt-1" id="prog-2-label">Home</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-stone-200 mx-2" id="line-2-3"></div>
+    <div class="step-indicator" id="prog-3">
+      <div class="w-8 h-8 rounded-full bg-stone-200 text-stone-500 flex items-center justify-center text-sm font-bold" id="prog-3-circle">3</div>
+      <span class="text-xs text-stone-400 font-medium mt-1" id="prog-3-label">Lifestyle</span>
+    </div>
+  </div>
+
+  <form id="adoption-form" onsubmit="handleSubmit(event)" novalidate>
+
+    <!-- ── SECTION 1: Personal Info ── -->
+    <div id="section-1" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm mb-6 fade-in">
+      <h3 class="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+        Personal Information
+      </h3>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div class="input-group">
+          <input id="f-fname" type="text" placeholder=" " class="form-input" autocomplete="given-name"/>
+          <label for="f-fname">👤 First Name *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-fname"></p>
+        </div>
+        <div class="input-group">
+          <input id="f-lname" type="text" placeholder=" " class="form-input" autocomplete="family-name"/>
+          <label for="f-lname">👤 Last Name *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-lname"></p>
+        </div>
+        <div class="input-group">
+          <input id="f-email" type="email" placeholder=" " class="form-input" autocomplete="email"/>
+          <label for="f-email">📧 Email *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-email"></p>
+        </div>
+        <div class="input-group">
+          <input id="f-phone" type="tel" placeholder=" " class="form-input" autocomplete="tel"/>
+          <label for="f-phone">📱 Phone Number *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-phone"></p>
+        </div>
+        <div class="input-group sm:col-span-2">
+          <input id="f-address" type="text" placeholder=" " class="form-input" autocomplete="street-address"/>
+          <label for="f-address">📍 Home Address *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-address"></p>
+        </div>
+        <div class="input-group">
+          <input id="f-city" type="text" placeholder=" " class="form-input" autocomplete="address-level2"/>
+          <label for="f-city">🏙️ City</label>
+        </div>
+        <div class="input-group">
+          <input id="f-zip" type="text" placeholder=" " class="form-input" autocomplete="postal-code"/>
+          <label for="f-zip">📮 ZIP Code</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: Home Info ── -->
+    <div id="section-2" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm mb-6 fade-in">
+      <h3 class="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+        Home & Living Situation
+      </h3>
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div class="input-group">
+          <select id="f-home-type" class="form-input">
+            <option value="">Select type...</option>
+            <option>House with yard</option>
+            <option>House without yard</option>
+            <option>Apartment</option>
+            <option>Condo</option>
+            <option>Farm/Rural</option>
+          </select>
+          <label for="f-home-type">🏠 Home Type *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-home-type"></p>
+        </div>
+        <div class="input-group">
+          <select id="f-own-rent" class="form-input">
+            <option value="">Select...</option>
+            <option>Own</option>
+            <option>Rent</option>
+          </select>
+          <label for="f-own-rent">🔑 Own or Rent *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-own-rent"></p>
+        </div>
+        <div class="input-group">
+          <select id="f-adults" class="form-input">
+            <option value="">Select...</option>
+            <option>1</option><option>2</option><option>3</option><option>4+</option>
+          </select>
+          <label for="f-adults">👥 Adults in Home</label>
+        </div>
+        <div class="input-group">
+          <select id="f-children" class="form-input">
+            <option value="">Select...</option>
+            <option>None</option>
+            <option>1 (Under 5)</option>
+            <option>1 (5–12)</option>
+            <option>1 (13+)</option>
+            <option>2+</option>
+          </select>
+          <label for="f-children">👧 Children in Home</label>
+        </div>
+        <!-- Has other pets -->
+        <div class="sm:col-span-2">
+          <p class="text-sm font-medium text-stone-700 mb-3">Do you have other pets?</p>
+          <div class="flex flex-wrap gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="other-pets" value="none" class="accent-orange-500" checked/>
+              <span class="text-stone-600 text-sm">No pets</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="other-pets" value="dogs" class="accent-orange-500"/>
+              <span class="text-stone-600 text-sm">Other dogs 🐕</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="other-pets" value="cats" class="accent-orange-500"/>
+              <span class="text-stone-600 text-sm">Cats 🐱</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="other-pets" value="both" class="accent-orange-500"/>
+              <span class="text-stone-600 text-sm">Both</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 3: Lifestyle ── -->
+    <div id="section-3" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm mb-6 fade-in">
+      <h3 class="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+        Lifestyle & Experience
+      </h3>
+      <div class="grid gap-5">
+        <div class="input-group">
+          <select id="f-experience" class="form-input">
+            <option value="">Select experience level...</option>
+            <option>First-time dog owner</option>
+            <option>Some experience (1–2 dogs)</option>
+            <option>Experienced (3+ dogs)</option>
+            <option>Professional / Trainer</option>
+          </select>
+          <label for="f-experience">🎓 Dog Experience *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-experience"></p>
+        </div>
+        <div class="input-group">
+          <select id="f-activity" class="form-input">
+            <option value="">Select activity level...</option>
+            <option>Very active (daily hikes/runs)</option>
+            <option>Moderately active (daily walks)</option>
+            <option>Lightly active (short walks)</option>
+            <option>Mostly indoors</option>
+          </select>
+          <label for="f-activity">🏃 Activity Level *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-activity"></p>
+        </div>
+        <div class="input-group">
+          <select id="f-hours-alone" class="form-input">
+            <option value="">Select...</option>
+            <option>0–2 hours/day</option>
+            <option>2–4 hours/day</option>
+            <option>4–8 hours/day</option>
+            <option>8+ hours/day</option>
+          </select>
+          <label for="f-hours-alone">⏰ Hours Dog Would Be Alone</label>
+        </div>
+        <div class="input-group">
+          <textarea id="f-why" rows="4" placeholder=" " class="form-input" style="resize:vertical;padding-top:1rem"></textarea>
+          <label for="f-why" style="top:1.2rem">💬 Why do you want to adopt this dog? *</label>
+          <p class="err-msg text-red-500 text-xs mt-1 hidden" id="err-why"></p>
+        </div>
+        <div class="input-group">
+          <textarea id="f-notes" rows="3" placeholder=" " class="form-input" style="resize:vertical;padding-top:1rem"></textarea>
+          <label for="f-notes" style="top:1.2rem">📝 Any additional notes?</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agreement -->
+    <div class="bg-orange-50 rounded-2xl p-5 mb-8 border border-orange-100 fade-in">
+      <label class="flex items-start gap-3 cursor-pointer">
+        <input id="f-agree" type="checkbox" class="mt-1 accent-orange-500 w-4 h-4"/>
+        <span class="text-stone-600 text-sm leading-relaxed">
+          I certify that the information provided is accurate and true. I understand that Happy Tails reserves the right to deny any adoption application. I agree to the <a href="#" class="text-orange-500 hover:underline">Adoption Terms</a> and will provide a safe, loving home for my adopted dog.
+        </span>
+      </label>
+      <p class="err-msg text-red-500 text-xs mt-2 hidden" id="err-agree"></p>
+    </div>
+
+    <!-- Submit Button -->
+    <button id="submit-btn" type="submit" class="btn-primary w-full justify-center text-lg" style="padding:1.1rem">
+      <span id="submit-text">🐾 Submit Adoption Application</span>
+      <span id="submit-spinner" class="hidden" style="width:20px;height:20px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block"></span>
+    </button>
+    <p class="text-center text-stone-400 text-sm mt-3">We'll respond within 24–48 hours 🐾</p>
+  </form>
+</main>
+
+<div id="public-footer"></div>
+
+<style>
+  .step-indicator { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  body.dark .bg-white { background-color: #1c1917 !important; }
+  body.dark .bg-orange-50 { background-color: #0f0e0d !important; }
+  body.dark .border-orange-100 { border-color: #292524 !important; }
+</style>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/footer.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Utils.initPage();
+
+  // Animate sections
+  setTimeout(() => {
+    document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+  }, 150);
+
+  // Redirect if not logged in
+  if (!API.getToken()) {
+    Utils.showToast('Please login to submit an adoption request 🐾', 'warning');
+    setTimeout(() => window.location.href = 'login.html', 1800);
+    return;
+  }
+
+  // Load dog info from URL params
+  const params = new URLSearchParams(window.location.search);
+  const dogId   = params.get('id') || params.get('dogId');
+  const dogName = params.get('name') || params.get('dogName');
+
+  if (dogName) {
+    document.getElementById('banner-name').textContent = decodeURIComponent(dogName);
+    document.getElementById('modal-dog-name').textContent = decodeURIComponent(dogName);
+  }
+
+  if (dogId) loadDogBanner(dogId);
+});
+
+async function loadDogBanner(id) {
+  try {
+    const res = await API.fetchDog(id);
+    const dog = res.dog || res;
+    document.getElementById('banner-name').textContent  = dog.name;
+    document.getElementById('banner-breed').textContent = dog.breed || '';
+    document.getElementById('modal-dog-name').textContent = dog.name;
+    const image = dog.image || dog.imageUrl || '';
+    const bannerImg = document.getElementById('banner-img');
+    if (!image) bannerImg.classList.add('hidden');
+    bannerImg.src = image;
+    bannerImg.onerror = () => bannerImg.classList.add('hidden');
+  } catch {
+    Utils.showToast('Unable to load selected dog details', 'error');
+  }
+}
+
+// ── Validation Helper ────────────────────────────────────────
+function validate(id, condition, msg) {
+  const errEl = document.getElementById('err-' + id);
+  const input = document.getElementById('f-' + id) || document.getElementById(id);
+  if (!condition) {
+    if (errEl) { errEl.textContent = msg; errEl.classList.remove('hidden'); }
+    if (input)  input.classList.add('error');
+    return false;
+  }
+  if (errEl) errEl.classList.add('hidden');
+  if (input) { input.classList.remove('error'); input.classList.add('success'); }
+  return true;
+}
+
+// ── Submit Handler ────────────────────────────────────────────
+async function handleSubmit(e) {
+  e.preventDefault();
+
+  // Clear errors
+  document.querySelectorAll('.err-msg').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error','success'));
+
+  const fname     = document.getElementById('f-fname').value.trim();
+  const lname     = document.getElementById('f-lname').value.trim();
+  const email     = document.getElementById('f-email').value.trim();
+  const phone     = document.getElementById('f-phone').value.trim();
+  const address   = document.getElementById('f-address').value.trim();
+  const homeType  = document.getElementById('f-home-type').value;
+  const ownRent   = document.getElementById('f-own-rent').value;
+  const experience= document.getElementById('f-experience').value;
+  const activity  = document.getElementById('f-activity').value;
+  const why       = document.getElementById('f-why').value.trim();
+  const agree     = document.getElementById('f-agree').checked;
+
+  let valid = true;
+  valid = validate('fname',    fname.length >= 2,                                'Please enter your first name')      && valid;
+  valid = validate('lname',    lname.length >= 2,                                'Please enter your last name')       && valid;
+  valid = validate('email',    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),        'Enter a valid email address')       && valid;
+  valid = validate('phone',    phone.length >= 7,                                'Enter a valid phone number')        && valid;
+  valid = validate('address',  address.length >= 5,                              'Please enter your home address')    && valid;
+  valid = validate('home-type',homeType !== '',                                  'Please select your home type')      && valid;
+  valid = validate('own-rent', ownRent !== '',                                   'Please select own or rent')         && valid;
+  valid = validate('experience',experience !== '',                               'Please select your experience level')&& valid;
+  valid = validate('activity', activity !== '',                                  'Please select your activity level') && valid;
+  valid = validate('why',      why.length >= 30,                                 'Please write at least 30 characters')&& valid;
+
+  if (!agree) {
+    const el = document.getElementById('err-agree');
+    if (el) { el.textContent = 'You must agree to the adoption terms'; el.classList.remove('hidden'); }
+    valid = false;
+  }
+
+  if (!valid) {
+    Utils.showToast('Please fix the errors above 👆', 'error');
+    document.querySelector('.err-msg:not(.hidden)')?.closest('.bg-white, .bg-orange-50')?.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+
+  // Loading state
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  document.getElementById('submit-text').textContent = 'Submitting...';
+  document.getElementById('submit-spinner').classList.remove('hidden');
+
+  const params   = new URLSearchParams(window.location.search);
+  const selectedDogId = params.get('id') || params.get('dogId');
+  const selectedDogName = params.get('name') || params.get('dogName') || 'your dog';
+  const otherPets = document.querySelector('input[name="other-pets"]:checked')?.value || 'none';
+
+  if (!selectedDogId) {
+    Utils.showToast('Please choose a dog before submitting an application.', 'error');
+    btn.disabled = false;
+    document.getElementById('submit-text').textContent = '🐾 Submit Adoption Application';
+    document.getElementById('submit-spinner').classList.add('hidden');
+    return;
+  }
+
+  const payload = {
+    dogId: selectedDogId,
+    firstName: fname,
+    lastName: lname,
+    email,
+    phoneNumber: phone,
+    homeAddress: address,
+    city: document.getElementById('f-city').value.trim(),
+    zipCode: document.getElementById('f-zip').value.trim(),
+    homeType,
+    ownOrRent: ownRent,
+    adultsInHome: document.getElementById('f-adults').value,
+    childrenInHome: document.getElementById('f-children').value,
+    currentPets: otherPets,
+    dogExperience: experience,
+    activityLevel: activity,
+    hoursDogWouldBeAlone: document.getElementById('f-hours-alone').value,
+    whyDoYouWantToAdoptThisDog: why,
+    additionalNotes: document.getElementById('f-notes').value.trim(),
+  };
+
+  try {
+    console.log("Submitting adoption payload:", payload);
+    await API.submitAdoption(payload);
+    Utils.showToast('Application submitted successfully! 🎉', 'success');
+    document.getElementById('modal-dog-name').textContent = decodeURIComponent(selectedDogName);
+    setTimeout(() => Utils.openModal('success-modal'), 400);
+  } catch (err) {
+    Utils.showToast(err.message || 'Unable to submit application. Please try again.', 'error');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('submit-text').textContent = '🐾 Submit Adoption Application';
+    document.getElementById('submit-spinner').classList.add('hidden');
+  }
+}
+
+// Close modal when clicking overlay
+document.getElementById('success-modal').addEventListener('click', function(e) {
+  if (e.target === this) Utils.closeModal('success-modal');
+});
+</script>
+</body>
+</html>

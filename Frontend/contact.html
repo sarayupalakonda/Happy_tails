@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Contact Happy Tails – reach out for adoptions, shelter partnerships, or general inquiries."/>
+  <title>Contact Us – Happy Tails</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐾</text></svg>"/>
+</head>
+<body class="bg-orange-50">
+<div id="toast-container"></div>
+
+<!-- NAVBAR -->
+<nav class="px-4 sm:px-8 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-xl font-bold text-stone-800">
+      <span class="text-2xl">🐾</span><span>Happy<span class="text-orange-500">Tails</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="index.html"   class="nav-link text-stone-600 hover:text-orange-500">Home</a>
+      <a href="dogs.html"    class="nav-link text-stone-600 hover:text-orange-500">Find Dogs</a>
+      <a href="about.html"   class="nav-link text-stone-600 hover:text-orange-500">About</a>
+      <a href="contact.html" class="nav-link text-stone-600 hover:text-orange-500 active">Contact</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="dark-toggle" class="w-9 h-9 rounded-full bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-all">
+        <span id="dark-icon">🌙</span>
+      </button>
+      <div data-auth-nav="logged-out" class="flex items-center gap-2">
+        <a href="login.html" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Sign Up</a>
+      </div>
+      <div data-auth-nav="logged-in" class="flex items-center gap-2" style="display:none">
+        <button onclick="API.logoutUser()" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Logout</button>
+      </div>
+    </div>
+    <button id="hamburger-btn" class="hamburger md:hidden"><span></span><span></span><span></span></button>
+  </div>
+  <div id="mobile-menu" class="md:hidden">
+    <div class="flex flex-col gap-3 pt-4 pb-2 px-2 border-t border-orange-100 mt-3">
+      <a href="index.html"   class="nav-link text-stone-700 font-medium py-2">🏠 Home</a>
+      <a href="dogs.html"    class="nav-link text-stone-700 font-medium py-2">🐕 Find Dogs</a>
+      <a href="about.html"   class="nav-link text-stone-700 font-medium py-2">ℹ️ About</a>
+      <a href="contact.html" class="nav-link text-stone-700 font-medium py-2">📬 Contact</a>
+      <div class="flex gap-2 pt-2">
+        <a href="login.html" class="btn-secondary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Sign Up</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="bg-gradient-to-r from-orange-500 to-amber-500 py-16 px-4 sm:px-8 text-center">
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-2" style="font-family:'Poppins',sans-serif">📬 Get in Touch</h1>
+    <p class="text-orange-100">Questions, partnerships, or just want to say hi? We'd love to hear from you!</p>
+  </div>
+</div>
+
+<!-- CONTACT SECTION -->
+<main class="max-w-7xl mx-auto px-4 sm:px-8 py-16">
+  <div class="grid lg:grid-cols-2 gap-12 items-start">
+
+    <!-- LEFT: Info -->
+    <div class="fade-in-left">
+      <h2 class="text-2xl font-extrabold text-stone-800 mb-6" style="font-family:'Poppins',sans-serif">We're here to help 🐾</h2>
+      <p class="text-stone-600 leading-relaxed mb-8">Whether you have questions about the adoption process, want to partner your shelter with us, or just want to share a cute dog photo — our team is always happy to chat!</p>
+
+      <!-- Contact Cards -->
+      <div class="flex flex-col gap-4 mb-8">
+        <div class="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl shrink-0">📧</div>
+          <div>
+            <p class="font-semibold text-stone-800 text-sm">Email Us</p>
+            <a href="mailto:hello@happytails.com" class="text-orange-500 text-sm hover:underline">hello@happytails.com</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl shrink-0">📱</div>
+          <div>
+            <p class="font-semibold text-stone-800 text-sm">Call Us</p>
+            <a href="tel:+18005551234" class="text-orange-500 text-sm hover:underline">+1 (800) 555-1234</a>
+            <p class="text-stone-400 text-xs">Mon–Fri, 9am–6pm EST</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl shrink-0">📍</div>
+          <div>
+            <p class="font-semibold text-stone-800 text-sm">Our Office</p>
+            <p class="text-stone-500 text-sm">123 Paw Street, New York, NY 10001</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl shrink-0">⏰</div>
+          <div>
+            <p class="font-semibold text-stone-800 text-sm">Response Time</p>
+            <p class="text-stone-500 text-sm">We reply within 24 hours</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social -->
+      <div>
+        <p class="font-semibold text-stone-700 mb-3 text-sm">Follow us 🐾</p>
+        <div class="flex gap-3">
+          <a href="#" class="w-10 h-10 rounded-xl bg-orange-100 hover:bg-orange-200 flex items-center justify-center text-lg transition-all hover:-translate-y-1">📘</a>
+          <a href="#" class="w-10 h-10 rounded-xl bg-orange-100 hover:bg-orange-200 flex items-center justify-center text-lg transition-all hover:-translate-y-1">📸</a>
+          <a href="#" class="w-10 h-10 rounded-xl bg-orange-100 hover:bg-orange-200 flex items-center justify-center text-lg transition-all hover:-translate-y-1">🐦</a>
+          <a href="#" class="w-10 h-10 rounded-xl bg-orange-100 hover:bg-orange-200 flex items-center justify-center text-lg transition-all hover:-translate-y-1">▶️</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Contact Form -->
+    <div class="fade-in-right">
+      <div class="glass rounded-3xl p-8">
+        <h3 class="text-lg font-bold text-stone-800 mb-6">Send us a message</h3>
+        <form id="contact-form" onsubmit="handleContact(event)" novalidate>
+          <div class="grid sm:grid-cols-2 gap-4 mb-4">
+            <div class="input-group">
+              <input id="c-name" type="text" placeholder=" " class="form-input" autocomplete="name"/>
+              <label for="c-name">👤 Your Name *</label>
+              <p id="c-name-err" class="text-red-500 text-xs mt-1 hidden"></p>
+            </div>
+            <div class="input-group">
+              <input id="c-email" type="email" placeholder=" " class="form-input" autocomplete="email"/>
+              <label for="c-email">📧 Email *</label>
+              <p id="c-email-err" class="text-red-500 text-xs mt-1 hidden"></p>
+            </div>
+          </div>
+          <div class="input-group mb-4">
+            <input id="c-phone" type="tel" placeholder=" " class="form-input" autocomplete="tel"/>
+            <label for="c-phone">📱 Phone</label>
+          </div>
+          <div class="input-group mb-4">
+            <select id="c-subject" class="form-input">
+              <option value="">Select a topic...</option>
+              <option>Adoption Questions</option>
+              <option>Shelter Partnership</option>
+              <option>Technical Support</option>
+              <option>Report an Issue</option>
+              <option>Press & Media</option>
+              <option>Other</option>
+            </select>
+            <label for="c-subject">📋 Subject</label>
+          </div>
+          <div class="input-group mb-6">
+            <textarea id="c-message" rows="5" placeholder=" " class="form-input" style="resize:vertical;padding-top:1rem"></textarea>
+            <label for="c-message" style="top:1.2rem">💬 Your Message *</label>
+            <p id="c-message-err" class="text-red-500 text-xs mt-1 hidden"></p>
+          </div>
+          <button id="contact-btn" type="submit" class="btn-primary w-full justify-center">
+            <span id="contact-btn-text">Send Message 📨</span>
+            <span id="contact-spinner" class="hidden" style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite"></span>
+          </button>
+        </form>
+        <div id="contact-success" class="hidden text-center py-6">
+          <div class="text-5xl mb-3">✅</div>
+          <h3 class="font-bold text-stone-800 mb-1">Message Sent!</h3>
+          <p class="text-stone-500 text-sm">We'll get back to you within 24 hours 🐾</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="mt-20">
+    <div class="text-center mb-10 fade-in">
+      <p class="text-orange-500 font-semibold text-sm tracking-widest uppercase mb-3">Quick Answers</p>
+      <h2 class="text-3xl font-extrabold text-stone-800 mb-4" style="font-family:'Poppins',sans-serif">Frequently Asked Questions</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
+      <div class="bg-white rounded-2xl p-6 shadow-sm fade-in">
+        <h4 class="font-bold text-stone-800 mb-2">How much does adoption cost?</h4>
+        <p class="text-stone-500 text-sm">Adoption fees vary by shelter, typically ₹5,000-₹30,000. This covers vaccinations, microchipping, and spay/neuter costs.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-sm fade-in">
+        <h4 class="font-bold text-stone-800 mb-2">How long does the process take?</h4>
+        <p class="text-stone-500 text-sm">After submitting your application, expect a response within 24–48 hours. The full process typically takes 3–7 days.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-sm fade-in">
+        <h4 class="font-bold text-stone-800 mb-2">Are the dogs vaccinated?</h4>
+        <p class="text-stone-500 text-sm">Yes! All dogs on our platform are health-checked, vaccinated, microchipped, and spayed/neutered before adoption.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-sm fade-in">
+        <h4 class="font-bold text-stone-800 mb-2">Can I partner my shelter?</h4>
+        <p class="text-stone-500 text-sm">Absolutely! We'd love to partner with you. Use the contact form above or email us at partners@happytails.com.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="public-footer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/footer.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Utils.initPage();
+  setTimeout(() => document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right').forEach(el => el.classList.add('visible')), 150);
+  Utils.initScrollAnimations();
+});
+
+async function handleContact(e) {
+  e.preventDefault();
+  const name    = document.getElementById('c-name').value.trim();
+  const email   = document.getElementById('c-email').value.trim();
+  const phone   = document.getElementById('c-phone').value.trim();
+  const subject = document.getElementById('c-subject').value.trim() || 'General Inquiry';
+  const message = document.getElementById('c-message').value.trim();
+  let valid = true;
+
+  ['c-name-err','c-email-err','c-message-err'].forEach(id => document.getElementById(id).classList.add('hidden'));
+
+  if (!name) {
+    const el = document.getElementById('c-name-err'); el.textContent = 'Please enter your name'; el.classList.remove('hidden');
+    document.getElementById('c-name').classList.add('error'); valid = false;
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const el = document.getElementById('c-email-err'); el.textContent = 'Enter a valid email'; el.classList.remove('hidden');
+    document.getElementById('c-email').classList.add('error'); valid = false;
+  }
+  if (!message || message.length < 10) {
+    const el = document.getElementById('c-message-err'); el.textContent = 'Please write at least 10 characters'; el.classList.remove('hidden');
+    document.getElementById('c-message').classList.add('error'); valid = false;
+  }
+  if (!valid) return;
+
+  document.getElementById('contact-btn').disabled = true;
+  document.getElementById('contact-btn-text').textContent = 'Sending...';
+  document.getElementById('contact-spinner').classList.remove('hidden');
+
+  try {
+    await API.submitContact({ name, email, phone, subject, message });
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('contact-success').classList.remove('hidden');
+    Utils.showToast('Message sent! We\'ll be in touch soon 🐾', 'success');
+  } catch (err) {
+    Utils.showToast(err.message || 'Could not send message', 'error');
+  } finally {
+    document.getElementById('contact-btn').disabled = false;
+    document.getElementById('contact-btn-text').textContent = 'Send Message 📨';
+    document.getElementById('contact-spinner').classList.add('hidden');
+  }
+}
+</script>
+</body>
+</html>

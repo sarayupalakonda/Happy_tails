@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Browse adoptable dogs – filter by breed, location, and more. Find your perfect furry companion at Happy Tails."/>
+  <title>Find Dogs – Happy Tails Adoption Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🐾</text></svg>"/>
+</head>
+<body class="bg-orange-50">
+
+<div id="toast-container"></div>
+
+<!-- ── NAVBAR ── -->
+<nav class="px-4 sm:px-8 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-xl font-bold text-stone-800">
+      <span class="text-2xl">🐾</span>
+      <span>Happy<span class="text-orange-500">Tails</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="index.html"   class="nav-link text-stone-600 hover:text-orange-500">Home</a>
+      <a href="dogs.html"    class="nav-link text-stone-600 hover:text-orange-500 active">Find Dogs</a>
+      <a href="about.html"   class="nav-link text-stone-600 hover:text-orange-500">About</a>
+      <a href="contact.html" class="nav-link text-stone-600 hover:text-orange-500">Contact</a>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <button id="dark-toggle" class="w-9 h-9 rounded-full bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-all">
+        <span id="dark-icon">🌙</span>
+      </button>
+      <div data-auth-nav="logged-out" class="flex items-center gap-2">
+        <a href="login.html" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Sign Up</a>
+      </div>
+      <div data-auth-nav="logged-in" class="flex items-center gap-2" style="display:none">
+        <span class="text-sm text-stone-600">Hi, <span id="nav-username" class="font-semibold text-orange-500"></span>!</span>
+        <a href="admin/dashboard.html" data-auth-nav="admin-only" class="btn-primary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Admin Panel</a>
+        <button onclick="API.logoutUser()" class="btn-secondary" style="padding:0.55rem 1.3rem;font-size:0.85rem">Logout</button>
+      </div>
+    </div>
+    <button id="hamburger-btn" class="hamburger md:hidden">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div id="mobile-menu" class="md:hidden">
+    <div class="flex flex-col gap-3 pt-4 pb-2 px-2 border-t border-orange-100 mt-3">
+      <a href="index.html"  class="nav-link text-stone-700 font-medium py-2">🏠 Home</a>
+      <a href="dogs.html"   class="nav-link text-stone-700 font-medium py-2">🐕 Find Dogs</a>
+      <a href="about.html"  class="nav-link text-stone-700 font-medium py-2">ℹ️ About</a>
+      <a href="contact.html" class="nav-link text-stone-700 font-medium py-2">📬 Contact</a>
+      <div class="flex gap-2 pt-2">
+        <a href="login.html" class="btn-secondary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Sign Up</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="bg-gradient-to-r from-orange-500 to-amber-500 py-12 px-4 sm:px-8">
+  <div class="max-w-7xl mx-auto text-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-2" style="font-family:'Poppins',sans-serif">🐕 Find Your Perfect Dog</h1>
+    <p class="text-orange-100">Browse hundreds of loving dogs waiting for their forever home</p>
+  </div>
+</div>
+
+<!-- ── FILTER BAR ── -->
+<div class="px-4 sm:px-8 py-6 max-w-7xl mx-auto">
+  <div class="filter-bar">
+    <div class="flex flex-col sm:flex-row gap-4 flex-wrap items-center">
+      <!-- Search -->
+      <div class="search-wrap flex-1 min-w-48">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="search-input" type="text" placeholder="Search by name..." class="form-input" style="padding-left:2.75rem"/>
+      </div>
+
+      <!-- Breed Filter -->
+      <select id="filter-breed" class="form-input" style="min-width:170px">
+        <option value="">🐕 All Breeds</option>
+        <option>Golden Retriever</option>
+        <option>Labrador</option>
+        <option>Pomeranian</option>
+        <option>Husky</option>
+        <option>Beagle</option>
+        <option>Poodle</option>
+        <option>Bulldog</option>
+        <option>German Shepherd</option>
+        <option>Dachshund</option>
+        <option>Shih Tzu</option>
+        <option>Mixed Breed</option>
+      </select>
+
+      <!-- Location Filter -->
+      <select id="filter-location" class="form-input" style="min-width:170px">
+        <option value="">📍 All Locations</option>
+        <option>New York, NY</option>
+        <option>Chicago, IL</option>
+        <option>Austin, TX</option>
+        <option>Denver, CO</option>
+        <option>Miami, FL</option>
+        <option>Seattle, WA</option>
+        <option>Boston, MA</option>
+        <option>Phoenix, AZ</option>
+        <option>Los Angeles, CA</option>
+      </select>
+
+      <!-- Type Filter Tabs -->
+      <div class="flex bg-stone-100 p-1 rounded-xl gap-1">
+        <button onclick="setFilterType('', this)" class="type-tab active px-4 py-2 rounded-lg text-sm font-semibold transition-all">All Dogs</button>
+        <button onclick="setFilterType('pet', this)" class="type-tab px-4 py-2 rounded-lg text-sm font-semibold transition-all">Breed Dogs</button>
+        <button onclick="setFilterType('street', this)" class="type-tab px-4 py-2 rounded-lg text-sm font-semibold transition-all">Street Dogs</button>
+        <button onclick="setFilterType('rescue', this)" class="type-tab px-4 py-2 rounded-lg text-sm font-semibold transition-all">Rescue Heroes</button>
+      </div>
+      <input type="hidden" id="filter-type" value="">
+
+      <!-- Age Filter -->
+      <select id="filter-age" class="form-input" style="min-width:140px">
+        <option value="">🎂 Any Age</option>
+        <option value="puppy">Puppy (0-1y)</option>
+        <option value="young">Young (1-3y)</option>
+        <option value="adult">Adult (3-7y)</option>
+        <option value="senior">Senior (7y+)</option>
+      </select>
+
+      <!-- Clear -->
+      <button id="clear-filters" class="btn-secondary" style="padding:0.7rem 1.5rem;white-space:nowrap">
+        ✕ Clear
+      </button>
+    </div>
+
+    <!-- Results count -->
+    <div class="flex items-center justify-between mt-4 pt-3 border-t border-orange-50">
+      <p id="results-count" class="text-stone-500 text-sm"></p>
+      <!-- Sort -->
+      <select id="sort-dogs" class="text-sm border border-stone-200 rounded-lg px-3 py-1.5 outline-none text-stone-600 bg-white focus:border-orange-400 transition-colors">
+        <option value="name">Sort: Name A-Z</option>
+        <option value="age-asc">Age: Youngest</option>
+        <option value="age-desc">Age: Oldest</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ── DOG GRID ── -->
+<main class="px-4 sm:px-8 pb-20 max-w-7xl mx-auto">
+  <div id="dogs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Pagination -->
+  <div id="pagination" class="flex justify-center gap-2 mt-12"></div>
+</main>
+
+<div id="public-footer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/footer.js"></script>
+<script>
+let ALL_DOGS = [];
+let filteredDogs = [];
+const PAGE_SIZE = 8;
+let currentPage = 1;
+
+// ── Init ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  Utils.initPage();
+  // Load dogs on init
+  const params = new URLSearchParams(window.location.search);
+  const typeParam = params.get('type');
+  if (typeParam) {
+    document.getElementById('filter-type').value = typeParam;
+  }
+  
+  loadDogs();
+  initFilters();
+});
+
+async function loadDogs() {
+  const grid = document.getElementById('dogs-grid');
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch('http://localhost:5000/api/dogs', { signal: controller.signal });
+    clearTimeout(timeout);
+    
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    
+    // As requested: handle various API response shapes
+    const dogs = data.data || data.dogs || data || [];
+    console.log("Dogs loaded from API:", dogs);
+
+    if (!Array.isArray(dogs) || dogs.length === 0) {
+      Utils.renderEmpty('dogs-grid', 'No dogs found in the database. 🐾');
+      return;
+    }
+
+    ALL_DOGS = dogs;
+    filteredDogs = [...ALL_DOGS];
+    renderDogs();
+  } catch (err) {
+    console.error('❌ Failed to fetch dogs:', err);
+    Utils.renderEmpty('dogs-grid', 'Unable to load dogs. Please check your connection. 🐾');
+  }
+}
+
+// ── Filter Logic ────────────────────────────────────────────
+function setFilterType(type, btn) {
+  document.getElementById('filter-type').value = type;
+  document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  applyFilters();
+}
+
+function initFilters() {
+  const search   = document.getElementById('search-input');
+  const breed    = document.getElementById('filter-breed');
+  const location = document.getElementById('filter-location');
+  const age      = document.getElementById('filter-age');
+  const sort     = document.getElementById('sort-dogs');
+  const clear    = document.getElementById('clear-filters');
+
+  [search, breed, location, age, sort].forEach(el => {
+    el.addEventListener('input', applyFilters);
+    el.addEventListener('change', applyFilters);
+  });
+
+  clear.addEventListener('click', () => {
+    search.value = ''; breed.value = ''; location.value = ''; age.value = '';
+    setFilterType('', document.querySelector('.type-tab'));
+    applyFilters();
+    Utils.showToast('Filters cleared', 'info', 1500);
+  });
+}
+
+function applyFilters() {
+  const searchQ  = document.getElementById('search-input').value.toLowerCase().trim();
+  const breedQ   = document.getElementById('filter-breed').value;
+  const locationQ= document.getElementById('filter-location').value;
+  const ageQ     = document.getElementById('filter-age').value;
+  const typeQ    = document.getElementById('filter-type').value;
+  const sortQ    = document.getElementById('sort-dogs').value;
+
+  filteredDogs = ALL_DOGS.filter(dog => {
+    if (searchQ   && !dog.name.toLowerCase().includes(searchQ) && !dog.breed.toLowerCase().includes(searchQ)) return false;
+    if (breedQ    && dog.breed !== breedQ) return false;
+    if (locationQ && dog.location !== locationQ) return false;
+    if (typeQ) {
+      if (typeQ === 'urgent') {
+        const isUrgent = (dog.urgencyLabel && dog.urgencyLabel.toLowerCase().includes('urgent')) || dog.type === 'rescue';
+        if (!isUrgent) return false;
+      } else {
+        if (dog.type !== typeQ) return false;
+      }
+    }
+    if (ageQ) {
+      const a = dog.age || 0;
+      if (ageQ === 'puppy'  && a > 1)  return false;
+      if (ageQ === 'young'  && (a < 1 || a > 3)) return false;
+      if (ageQ === 'adult'  && (a < 3 || a > 7)) return false;
+      if (ageQ === 'senior' && a < 7)  return false;
+    }
+    return true;
+  });
+
+  // Sort
+  filteredDogs.sort((a, b) => {
+    if (sortQ === 'name')     return a.name.localeCompare(b.name);
+    if (sortQ === 'age-asc')  return (a.age || 0) - (b.age || 0);
+    if (sortQ === 'age-desc') return (b.age || 0) - (a.age || 0);
+    return 0;
+  });
+
+  currentPage = 1;
+  renderDogs();
+}
+
+// ── Render Dogs ─────────────────────────────────────────────
+function renderDogs() {
+  const grid = document.getElementById('dogs-grid');
+  const count = document.getElementById('results-count');
+
+  if (!filteredDogs.length) {
+    Utils.renderEmpty('dogs-grid', 'No dogs found 🐶');
+    if (count) count.textContent = '0 dogs found';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page  = filteredDogs.slice(start, start + PAGE_SIZE);
+
+  grid.innerHTML = page.map(d => Utils.dogCardHTML(d)).join('');
+  if (count) count.textContent = `${filteredDogs.length} dog${filteredDogs.length !== 1 ? 's' : ''} found`;
+
+  renderPagination();
+
+  // Stagger animate cards in immediately
+  setTimeout(() => {
+    grid.querySelectorAll('.fade-in').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 60);
+    });
+  }, 30);
+}
+
+// ── Pagination ───────────────────────────────────────────────
+function renderPagination() {
+  const total = Math.ceil(filteredDogs.length / PAGE_SIZE);
+  const el = document.getElementById('pagination');
+  if (total <= 1) { el.innerHTML = ''; return; }
+
+  let html = '';
+  
+  // Previous button
+  html += `<button onclick="goPage(${currentPage - 1})" class="w-10 h-10 rounded-full bg-white text-stone-600 font-medium text-sm border border-stone-200 hover:border-orange-400 hover:text-orange-500 transition-all flex items-center justify-center ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}">←</button>`;
+
+  for (let i = 1; i <= total; i++) {
+    if (i === currentPage) {
+      html += `<button class="w-10 h-10 rounded-full bg-orange-500 text-white font-semibold text-sm shadow-md">${i}</button>`;
+    } else {
+      html += `<button onclick="goPage(${i})" class="w-10 h-10 rounded-full bg-white text-stone-600 font-medium text-sm border border-stone-200 hover:border-orange-400 hover:text-orange-500 transition-all">${i}</button>`;
+    }
+  }
+
+  // Next button
+  html += `<button onclick="goPage(${currentPage + 1})" class="w-10 h-10 rounded-full bg-white text-stone-600 font-medium text-sm border border-stone-200 hover:border-orange-400 hover:text-orange-500 transition-all flex items-center justify-center ${currentPage === total ? 'opacity-50 pointer-events-none' : ''}">→</button>`;
+
+  el.innerHTML = html;
+}
+
+function goPage(n) {
+  currentPage = n;
+  renderDogs();
+  window.scrollTo({ top: 300, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
