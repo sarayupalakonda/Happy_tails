@@ -310,7 +310,21 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label for="d-location" class="block text-sm font-medium text-stone-600 mb-1">Location</label>
-            <input id="d-location" type="text" class="admin-input" required placeholder="e.g. New York, NY">
+            <input id="d-location" type="text" class="admin-input" required placeholder="e.g. Hyderabad, Telangana" list="indian-city-options">
+            <datalist id="indian-city-options">
+              <option value="Hyderabad, Telangana"></option>
+              <option value="Madhapur, Hyderabad"></option>
+              <option value="Bengaluru, Karnataka"></option>
+              <option value="Chennai, Tamil Nadu"></option>
+              <option value="Mumbai, Maharashtra"></option>
+              <option value="Pune, Maharashtra"></option>
+              <option value="Delhi, India"></option>
+              <option value="Kolkata, West Bengal"></option>
+              <option value="Jaipur, Rajasthan"></option>
+              <option value="Kochi, Kerala"></option>
+              <option value="Vizag, Andhra Pradesh"></option>
+              <option value="Vijayawada, Andhra Pradesh"></option>
+            </datalist>
           </div>
           <div>
             <label for="d-adoptionFee" class="block text-sm font-medium text-stone-600 mb-1">Adoption Fee (₹)</label>

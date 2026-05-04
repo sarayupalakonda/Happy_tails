@@ -9,6 +9,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+Object.assign(window, {
+  showSection,
+  loadAdoptions,
+  loadDogs,
+  loadContacts,
+  updateStatus,
+  deleteApplication,
+  toggleDogModal,
+  toggleRescueFields,
+  editDog,
+  confirmDeleteDog,
+  openContactModal,
+  confirmDeleteContact,
+  adminLogout,
+  openProfileModal,
+  closeProfileModal,
+  handleProfileSubmit,
+  openModal,
+  closeModal
+});
+
 async function initAdmin() {
   const user = API.getUser();
   if (document.getElementById('admin-name')) {
@@ -46,6 +67,19 @@ function showSection(sectionId) {
   };
   document.getElementById('section-title').textContent = titles[sectionId];
 
+  const activeSection = document.getElementById(`sec-${sectionId}`);
+  const activeBtn = document.getElementById(`btn-${sectionId}`);
+  if (activeSection) activeSection.classList.remove('hidden');
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar && window.innerWidth < 768) sidebar.classList.add('hidden');
+
+  if (sectionId === 'dashboard') {
+    loadStats();
+    loadAdoptions();
+  }
+  if (sectionId === 'dogs') loadDogs();
   if (sectionId === 'contacts') loadContacts();
 }
 
@@ -156,10 +190,12 @@ function renderRecentAdoptions(adoptions) {
 }
 
 async function updateStatus(id, status, btn) {
+  let originalText = btn ? btn.textContent : '';
   try {
-    const originalText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = '...';
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '...';
+    }
 
     const res = await API.updateAdoptionStatus(id, status);
     if (res.success || res.status === 'approved' || res.status === 'rejected' || res._id) {
@@ -167,8 +203,10 @@ async function updateStatus(id, status, btn) {
       await loadAdoptions(); // Refetches and recalculates stats
     }
   } catch (err) {
-    btn.disabled = false;
-    btn.textContent = originalText;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
     Utils.showToast(err.message, 'error');
   }
 }
@@ -281,8 +319,10 @@ async function loadDogs() {
 
 function toggleDogModal() {
   const modal = document.getElementById('dog-modal');
-  modal.classList.toggle('hidden');
-  if (modal.classList.contains('hidden')) {
+  const shouldOpen = modal.classList.contains('hidden');
+  modal.classList.toggle('hidden', !shouldOpen);
+  modal.classList.toggle('flex', shouldOpen);
+  if (!shouldOpen) {
     document.getElementById('dog-form').reset();
     document.getElementById('edit-id').value = '';
     document.getElementById('modal-title').textContent = 'Add New Dog 🐾';
@@ -389,6 +429,7 @@ async function editDog(id) {
     
     const modal = document.getElementById('dog-modal');
     modal.classList.remove('hidden');
+    modal.classList.add('flex');
   } catch (err) {
     Utils.showToast('Failed to fetch dog details', 'error');
   }

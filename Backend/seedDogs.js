@@ -6,7 +6,7 @@ const dogs = [
   // ── BREED DOGS (PETS) ──────────────────────────────────────
   { 
     name: 'Buddy', breed: 'Golden Retriever', age: 2, gender: 'Male', size: 'Large', 
-    location: 'New York, NY', adoptionFee: 250, vaccinationStatus: 'Vaccinated', 
+    location: 'Hyderabad, Telangana', adoptionFee: 250, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Friendly', 'Playful'],
     image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1000&h=625&q=80',
     imagePosition: 'center 30%',
@@ -14,7 +14,7 @@ const dogs = [
   },
   { 
     name: 'Luna', breed: 'Labrador', age: 1, gender: 'Female', size: 'Large', 
-    location: 'Chicago, IL', adoptionFee: 300, vaccinationStatus: 'Vaccinated', 
+    location: 'Madhapur, Hyderabad', adoptionFee: 300, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Energetic', 'Loyal'],
     image: 'https://images.pexels.com/photos/998251/pexels-photo-998251.jpeg?auto=compress&cs=tinysrgb&w=1000&h=625&fit=crop',
     imagePosition: 'center 30%',
@@ -22,7 +22,7 @@ const dogs = [
   },
   { 
     name: 'Mochi', breed: 'Pomeranian', age: 3, gender: 'Female', size: 'Small', 
-    location: 'Austin, TX', adoptionFee: 400, vaccinationStatus: 'Vaccinated', 
+    location: 'Bengaluru, Karnataka', adoptionFee: 400, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Cuddly', 'Fluffy'],
     image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1000&h=625&q=80',
     imagePosition: 'center 30%',
@@ -30,7 +30,7 @@ const dogs = [
   },
   { 
     name: 'Storm', breed: 'Husky', age: 4, gender: 'Male', size: 'Large', 
-    location: 'Denver, CO', adoptionFee: 350, vaccinationStatus: 'Vaccinated', 
+    location: 'Chennai, Tamil Nadu', adoptionFee: 350, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Smart', 'Active'],
     image: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1000&h=625&q=80',
     imagePosition: 'center top',
@@ -38,7 +38,7 @@ const dogs = [
   },
   { 
     name: 'Coco', breed: 'Beagle', age: 2, gender: 'Female', size: 'Medium', 
-    location: 'Miami, FL', adoptionFee: 200, vaccinationStatus: 'Vaccinated', 
+    location: 'Mumbai, Maharashtra', adoptionFee: 200, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Curious', 'Friendly'],
     image: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?auto=format&fit=crop&w=1000&h=625&q=80',
     imagePosition: 'center 30%',
@@ -46,7 +46,7 @@ const dogs = [
   },
   { 
     name: 'Charlie', breed: 'Poodle', age: 5, gender: 'Male', size: 'Medium', 
-    location: 'Seattle, WA', adoptionFee: 450, vaccinationStatus: 'Vaccinated', 
+    location: 'Pune, Maharashtra', adoptionFee: 450, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Intelligent', 'Gentle'],
     image: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?auto=format&fit=crop&w=1000&h=625&q=80',
     imagePosition: 'center 30%',
@@ -54,7 +54,7 @@ const dogs = [
   },
   { 
     name: 'Daisy', breed: 'Bulldog', age: 3, gender: 'Female', size: 'Medium', 
-    location: 'Boston, MA', adoptionFee: 300, vaccinationStatus: 'Vaccinated', 
+    location: 'Delhi, India', adoptionFee: 300, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Calm', 'Affectionate'],
     image: 'https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=1000&h=625&q=80',
     imagePosition: 'center 30%',
@@ -62,7 +62,7 @@ const dogs = [
   },
   { 
     name: 'Rex', breed: 'German Shepherd', age: 2, gender: 'Male', size: 'Large', 
-    location: 'Phoenix, AZ', adoptionFee: 350, vaccinationStatus: 'Vaccinated', 
+    location: 'Jaipur, Rajasthan', adoptionFee: 350, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'pet', personalityTags: ['Brave', 'Alert'],
     image: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?auto=format&fit=crop&w=1000&h=625&q=80',
     imagePosition: 'center 30%',
@@ -72,7 +72,7 @@ const dogs = [
   // ── STREET & RESCUE HEROES (REALISTIC INDIAN INDIE DOGS) ───────
   { 
     name: 'Brownie', breed: 'Indian Pariah Dog', age: 3, gender: 'Male', size: 'Medium', 
-    location: 'Hyderabad, IN', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
+    location: 'Hyderabad, Telangana', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'street', urgencyLabel: 'Hero',
     rescueLocation: 'Near Charminar, Hyderabad', healthStatus: 'Healthy & Strong',
     personalityTags: ['Resilient', 'Intelligent', 'Protective'],
@@ -83,7 +83,7 @@ const dogs = [
   },
   { 
     name: 'Lucky', breed: 'Indian Street Puppy', age: 0.5, gender: 'Female', size: 'Small', 
-    location: 'Hyderabad, IN', adoptionFee: 0, vaccinationStatus: 'Partially Vaccinated', 
+    location: 'Madhapur, Hyderabad', adoptionFee: 0, vaccinationStatus: 'Partially Vaccinated', 
     availabilityStatus: 'Available', type: 'street', urgencyLabel: 'Urgent',
     rescueLocation: 'Madhapur Metro Station', healthStatus: 'Recovering & Playful',
     personalityTags: ['Sweet', 'Energetic', 'Tiny'],
@@ -94,7 +94,7 @@ const dogs = [
   },
   { 
     name: 'Shadow', breed: 'Black Indie Dog', age: 4, gender: 'Male', size: 'Large', 
-    location: 'Bangalore, IN', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
+    location: 'Bengaluru, Karnataka', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'street', urgencyLabel: 'Special Need',
     rescueLocation: 'Indiranagar Park Side', healthStatus: 'Excellent',
     personalityTags: ['Majestic', 'Calm', 'Loyal'],
@@ -105,7 +105,7 @@ const dogs = [
   },
   { 
     name: 'Chinni', breed: 'Rescued Indie Dog', age: 2, gender: 'Female', size: 'Medium', 
-    location: 'Chennai, IN', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
+    location: 'Chennai, Tamil Nadu', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'rescue', urgencyLabel: 'Miracle',
     rescueLocation: 'OMR Road, Chennai', healthStatus: 'Fully Recovered',
     personalityTags: ['Affectionate', 'Gentle', 'Survivor'],
@@ -116,7 +116,7 @@ const dogs = [
   },
   { 
     name: 'Raju', breed: 'Brown Indian Street Dog', age: 3, gender: 'Male', size: 'Medium', 
-    location: 'Delhi, IN', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
+    location: 'Delhi, India', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'street', urgencyLabel: 'Friendly',
     rescueLocation: 'Connaught Place', healthStatus: 'Healthy',
     personalityTags: ['Friendly', 'Loyal'],
@@ -127,7 +127,7 @@ const dogs = [
   },
   { 
     name: 'Kalu', breed: 'Black Street Dog', age: 5, gender: 'Male', size: 'Large', 
-    location: 'Mumbai, IN', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
+    location: 'Mumbai, Maharashtra', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'street', urgencyLabel: 'Senior Hero',
     rescueLocation: 'Dharavi Slums', healthStatus: 'Healthy',
     personalityTags: ['Calm', 'Wise'],
@@ -138,7 +138,7 @@ const dogs = [
   },
   { 
     name: 'Moti', breed: 'White Indie Dog', age: 2, gender: 'Female', size: 'Medium', 
-    location: 'Pune, IN', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
+    location: 'Pune, Maharashtra', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'street', urgencyLabel: 'Playful',
     rescueLocation: 'Pune University Campus', healthStatus: 'Healthy',
     personalityTags: ['Playful', 'Active'],
@@ -149,7 +149,7 @@ const dogs = [
   },
   { 
     name: 'Simba', breed: 'Indian Local Dog', age: 4, gender: 'Male', size: 'Large', 
-    location: 'Kolkata, IN', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
+    location: 'Kolkata, West Bengal', adoptionFee: 0, vaccinationStatus: 'Vaccinated', 
     availabilityStatus: 'Available', type: 'rescue', urgencyLabel: 'Majestic',
     rescueLocation: 'Howrah Bridge Area', healthStatus: 'Healthy',
     personalityTags: ['Brave', 'Loyal'],
@@ -160,13 +160,48 @@ const dogs = [
   }
 ];
 
+const locationCleanupMap = {
+  'New York, NY': 'Hyderabad, Telangana',
+  'Chicago, IL': 'Madhapur, Hyderabad',
+  'Austin, TX': 'Bengaluru, Karnataka',
+  'Denver, CO': 'Chennai, Tamil Nadu',
+  'Miami, FL': 'Mumbai, Maharashtra',
+  'Seattle, WA': 'Pune, Maharashtra',
+  'Boston, MA': 'Delhi, India',
+  'Phoenix, AZ': 'Jaipur, Rajasthan',
+  'Los Angeles, CA': 'Kochi, Kerala',
+  'Bangalore, IN': 'Bengaluru, Karnataka',
+  'Hyderabad, IN': 'Hyderabad, Telangana',
+  'Chennai, IN': 'Chennai, Tamil Nadu',
+  'Delhi, IN': 'Delhi, India',
+  'Mumbai, IN': 'Mumbai, Maharashtra',
+  'Pune, IN': 'Pune, Maharashtra',
+  'Kolkata, IN': 'Kolkata, West Bengal'
+};
+
 const seedDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('📡 CONNECTED TO MONGODB FOR SEEDING...');
-    
-    await Dog.deleteMany({});
-    console.log('🧹 CLEARED EXISTING DOG DATA.');
+
+    for (const [from, to] of Object.entries(locationCleanupMap)) {
+      const result = await Dog.updateMany({ location: from }, { $set: { location: to } });
+      if (result.modifiedCount) {
+        console.log(`Updated ${result.modifiedCount} dog location(s): ${from} -> ${to}`);
+      }
+    }
+
+    const existingCount = await Dog.countDocuments();
+    if (existingCount > 0 && process.env.RESET_DOGS !== 'true') {
+      console.log(`Dogs collection already has ${existingCount} records. Skipping seed.`);
+      console.log('Set RESET_DOGS=true only when you intentionally want to replace dog data.');
+      process.exit();
+    }
+
+    if (process.env.RESET_DOGS === 'true') {
+      await Dog.deleteMany({});
+      console.log('🧹 CLEARED EXISTING DOG DATA.');
+    }
     
     const inserted = await Dog.insertMany(dogs);
     console.log(`✅ SUCCESSFULLY SEEDED ${inserted.length} UNIQUE DOGS! 🐾`);

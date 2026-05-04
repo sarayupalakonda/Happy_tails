@@ -645,6 +645,15 @@
     padding-bottom: 1rem;
   }
 
+  .admin-sidebar:not(.hidden)::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    left: min(86vw, 300px);
+    background: rgba(28, 25, 23, 0.28);
+    pointer-events: none;
+  }
+
   .admin-main {
     padding: 0;
   }
@@ -697,6 +706,31 @@
   .admin-btn {
     min-height: 42px;
     white-space: normal;
+  }
+
+  .admin-card .flex.justify-between,
+  #sec-dogs > .flex.justify-between,
+  #sec-adoptions .flex.justify-between,
+  #sec-contacts .flex.justify-between {
+    align-items: stretch !important;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  #sec-dogs > .flex.justify-between .admin-btn,
+  #sec-adoptions .admin-btn,
+  #sec-contacts .admin-btn {
+    width: 100%;
+  }
+
+  #dog-modal,
+  #viewModal,
+  #profileModal {
+    padding: 0.75rem;
+  }
+
+  #modalContent {
+    padding: 1rem !important;
   }
 
   .admin-profile-dropdown {

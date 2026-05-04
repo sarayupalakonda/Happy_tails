@@ -30,8 +30,8 @@
             <h4 class="font-semibold text-white mb-3">Contact</h4>
             <div class="space-y-2 text-sm text-stone-400">
               <p><span class="text-orange-400 font-medium">Email:</span> hello@happytails.com</p>
-              <p><span class="text-orange-400 font-medium">Phone:</span> +1 (800) 555-1234</p>
-              <p><span class="text-orange-400 font-medium">Location:</span> Hyderabad, India</p>
+              <p><span class="text-orange-400 font-medium">Phone:</span> +91 98765 43210</p>
+              <p><span class="text-orange-400 font-medium">Location:</span> Hyderabad, Telangana</p>
             </div>
           </div>
 

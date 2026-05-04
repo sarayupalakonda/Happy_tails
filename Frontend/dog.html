@@ -312,6 +312,13 @@ function renderDog(dog) {
     window.location.href = `adopt.html?id=${dog._id || dog.id}&name=${encodeURIComponent(dog.name)}`;
   };
 
+  const favoriteBtn = document.getElementById('favorite-btn');
+  if (favoriteBtn) {
+    favoriteBtn.onclick = () => {
+      Utils.showToast(`${dog.name} has been saved for later`, 'success', 1800);
+    };
+  }
+
   // Rescue Mission Details
   const isRescue = dog.type === 'street' || dog.type === 'rescue';
   const rescueSec = document.getElementById('rescue-section');

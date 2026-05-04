@@ -1,10 +1,18 @@
 /**
  * Happy Tails – API Module
  * All backend communication via fetch API
- * Base: http://localhost:5000/api
+ * Uses localhost for local development and Render for deployed pages.
  */
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE_URL =
+  window.HAPPY_TAILS_API_BASE ||
+  (window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1' ||
+  window.location.hostname === ''
+    ? 'http://localhost:5000/api'
+    : 'https://happy-tails-0opo.onrender.com/api');
+
+const API_BASE = API_BASE_URL.replace(/\/$/, '');
 
 // ── Helpers ──────────────────────────────────────────────
 function getToken() {
@@ -41,8 +49,12 @@ async function fetchDogs(params = {}) {
     Object.fromEntries(Object.entries(params).filter(([, v]) => v))
   ).toString();
   const url = `${API_BASE}/dogs${query ? '?' + query : ''}`;
+  console.log("Dogs API URL:", url);
   const res = await fetch(url, { headers: authHeaders() });
-  return handleResponse(res);
+  const data = await handleResponse(res);
+  const dogs = Array.isArray(data) ? data : (data.data || data.dogs || data.data?.dogs || data.data?.data || []);
+  console.log("Dogs loaded:", dogs);
+  return data;
 }
 
 async function fetchDog(id) {
@@ -207,3 +219,5 @@ window.API = {
   fetchAdminStats,
   fetchAdminUsers
 };
+
+window.API_BASE_URL = API_BASE;

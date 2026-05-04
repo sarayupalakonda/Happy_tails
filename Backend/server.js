@@ -14,7 +14,27 @@ connectDB();
 const app = express();
 const createAdmin = require("./config/adminInit");
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://happy-tails-0opo.onrender.com",
+  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",").map(origin => origin.trim()) : []),
+  ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(",").map(origin => origin.trim()) : [])
+].filter(Boolean);
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Initialize Default Admin

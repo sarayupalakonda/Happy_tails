@@ -69,7 +69,7 @@
 <!-- ── FILTER BAR ── -->
 <div class="px-4 sm:px-8 py-6 max-w-7xl mx-auto">
   <div class="filter-bar">
-    <div class="flex flex-col sm:flex-row gap-4 flex-wrap items-center">
+    <div class="search-filter-wrapper flex flex-col sm:flex-row gap-4 flex-wrap items-center">
       <!-- Search -->
       <div class="search-wrap flex-1 min-w-48">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -95,15 +95,18 @@
       <!-- Location Filter -->
       <select id="filter-location" class="form-input" style="min-width:170px">
         <option value="">📍 All Locations</option>
-        <option>New York, NY</option>
-        <option>Chicago, IL</option>
-        <option>Austin, TX</option>
-        <option>Denver, CO</option>
-        <option>Miami, FL</option>
-        <option>Seattle, WA</option>
-        <option>Boston, MA</option>
-        <option>Phoenix, AZ</option>
-        <option>Los Angeles, CA</option>
+        <option>Hyderabad, Telangana</option>
+        <option>Madhapur, Hyderabad</option>
+        <option>Bengaluru, Karnataka</option>
+        <option>Chennai, Tamil Nadu</option>
+        <option>Mumbai, Maharashtra</option>
+        <option>Pune, Maharashtra</option>
+        <option>Delhi, India</option>
+        <option>Kolkata, West Bengal</option>
+        <option>Jaipur, Rajasthan</option>
+        <option>Kochi, Kerala</option>
+        <option>Vizag, Andhra Pradesh</option>
+        <option>Vijayawada, Andhra Pradesh</option>
       </select>
 
       <!-- Type Filter Tabs -->
@@ -181,13 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadDogs() {
   const grid = document.getElementById('dogs-grid');
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch('http://localhost:5000/api/dogs', { signal: controller.signal });
-    clearTimeout(timeout);
-    
-    if (!res.ok) throw new Error('API error');
-    const data = await res.json();
+    const data = await API.fetchDogs();
     
     // As requested: handle various API response shapes
     const dogs = data.data || data.dogs || data || [];
@@ -336,6 +333,9 @@ function goPage(n) {
   renderDogs();
   window.scrollTo({ top: 300, behavior: 'smooth' });
 }
+
+window.setFilterType = setFilterType;
+window.goPage = goPage;
 </script>
 </body>
 </html>
