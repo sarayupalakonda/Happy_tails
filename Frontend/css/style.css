@@ -501,6 +501,10 @@ textarea.form-input {
 .search-wrap { position: relative; }
 .search-wrap input { padding-left: 2.75rem; }
 .search-wrap .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+.suggestions-box { position: absolute; width: 100%; background: #fff; box-shadow: 0 14px 34px rgba(28,25,23,0.14); border-radius: 0.75rem; margin-top: 0.5rem; z-index: 50; max-height: 13rem; overflow-y: auto; border: 1px solid rgba(249,115,22,0.12); }
+.suggestion-item { display: block; width: 100%; text-align: left; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.875rem; color: var(--text-dark); background: transparent; border: 0; }
+.suggestion-item:hover { background: #fff7ed; color: #ea580c; }
+body.dark .suggestions-box { background: #1c1917; border-color: #44403c; }
 
 /* Empty state */
 .empty-state { text-align: center; padding: 4rem 2rem; }
@@ -544,6 +548,12 @@ textarea.form-input {
 
   .empty-state {
     padding: 3rem 1rem;
+  }
+
+  .suggestions-box {
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.82rem;
   }
 }
 

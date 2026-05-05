@@ -729,6 +729,66 @@
     padding: 0.75rem;
   }
 
+  #profileModal {
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #profileModalBox {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
+    max-height: none;
+    overflow: visible;
+  }
+
+  #profileModal .admin-modal,
+  #profileModal .admin-card,
+  #profileModal .admin-profile-info-card,
+  #profileModal .admin-profile-body,
+  #profileModal .admin-profile-hero {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  #profileModal .admin-profile-hero {
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  #profileModal .admin-profile-avatar {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 18px;
+    font-size: 1.5rem;
+  }
+
+  #profileModal .admin-profile-body {
+    padding: 1rem;
+  }
+
+  #profileModal .admin-profile-body .grid,
+  #profileModal .profile-form-grid,
+  #profileModal .admin-profile-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  #profileModal .admin-profile-body .flex.gap-3 {
+    flex-direction: column;
+  }
+
+  #profileModal input,
+  #profileModal button {
+    width: 100%;
+    max-width: 100%;
+  }
+
   #modalContent {
     padding: 1rem !important;
   }

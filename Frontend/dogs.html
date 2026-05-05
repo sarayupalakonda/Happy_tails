@@ -73,7 +73,15 @@
       <!-- Search -->
       <div class="search-wrap flex-1 min-w-48">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input id="search-input" type="text" placeholder="Search by name..." class="form-input" style="padding-left:2.75rem"/>
+        <input id="search-input" type="text" placeholder="Search by dog breed..." class="form-input" style="padding-left:2.75rem" autocomplete="off"/>
+        <div id="breed-suggestions" class="suggestions-box hidden"></div>
+      </div>
+
+      <!-- Location Search -->
+      <div class="search-wrap flex-1 min-w-48">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <input id="location-search-input" type="text" placeholder="Search by location..." class="form-input" style="padding-left:2.75rem" autocomplete="off"/>
+        <div id="location-suggestions" class="suggestions-box hidden"></div>
       </div>
 
       <!-- Breed Filter -->
@@ -164,6 +172,8 @@
 <script>
 let ALL_DOGS = [];
 let filteredDogs = [];
+let breedList = [];
+let locationList = [];
 const PAGE_SIZE = 8;
 let currentPage = 1;
 
@@ -196,6 +206,7 @@ async function loadDogs() {
     }
 
     ALL_DOGS = dogs;
+    buildSuggestionLists();
     filteredDogs = [...ALL_DOGS];
     renderDogs();
   } catch (err) {
@@ -214,19 +225,29 @@ function setFilterType(type, btn) {
 
 function initFilters() {
   const search   = document.getElementById('search-input');
+  const locationSearch = document.getElementById('location-search-input');
   const breed    = document.getElementById('filter-breed');
   const location = document.getElementById('filter-location');
   const age      = document.getElementById('filter-age');
   const sort     = document.getElementById('sort-dogs');
   const clear    = document.getElementById('clear-filters');
 
-  [search, breed, location, age, sort].forEach(el => {
-    el.addEventListener('input', applyFilters);
+  [search, locationSearch, breed, location, age, sort].forEach(el => {
+    el.addEventListener('input', () => {
+      if (el === search) updateSuggestions('breed');
+      if (el === locationSearch) updateSuggestions('location');
+      applyFilters();
+    });
     el.addEventListener('change', applyFilters);
   });
 
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.search-wrap')) closeSuggestions();
+  });
+
   clear.addEventListener('click', () => {
-    search.value = ''; breed.value = ''; location.value = ''; age.value = '';
+    search.value = ''; locationSearch.value = ''; breed.value = ''; location.value = ''; age.value = '';
+    closeSuggestions();
     setFilterType('', document.querySelector('.type-tab'));
     applyFilters();
     Utils.showToast('Filters cleared', 'info', 1500);
@@ -235,6 +256,7 @@ function initFilters() {
 
 function applyFilters() {
   const searchQ  = document.getElementById('search-input').value.toLowerCase().trim();
+  const locationSearchQ = document.getElementById('location-search-input').value.toLowerCase().trim();
   const breedQ   = document.getElementById('filter-breed').value;
   const locationQ= document.getElementById('filter-location').value;
   const ageQ     = document.getElementById('filter-age').value;
@@ -242,7 +264,13 @@ function applyFilters() {
   const sortQ    = document.getElementById('sort-dogs').value;
 
   filteredDogs = ALL_DOGS.filter(dog => {
-    if (searchQ   && !dog.name.toLowerCase().includes(searchQ) && !dog.breed.toLowerCase().includes(searchQ)) return false;
+    const dogBreed = (dog.breed || '').toLowerCase();
+    const dogLocation = (dog.location || '').toLowerCase();
+    const dogCity = (dog.city || '').toLowerCase();
+    const dogRescueLocation = (dog.rescueLocation || '').toLowerCase();
+
+    if (searchQ && !dogBreed.includes(searchQ)) return false;
+    if (locationSearchQ && !dogLocation.includes(locationSearchQ) && !dogCity.includes(locationSearchQ) && !dogRescueLocation.includes(locationSearchQ)) return false;
     if (breedQ    && dog.breed !== breedQ) return false;
     if (locationQ && dog.location !== locationQ) return false;
     if (typeQ) {
@@ -273,6 +301,74 @@ function applyFilters() {
 
   currentPage = 1;
   renderDogs();
+}
+
+function buildSuggestionLists() {
+  breedList = [...new Set(ALL_DOGS.map(dog => dog.breed).filter(Boolean))].sort();
+  locationList = [...new Set(ALL_DOGS.flatMap(dog => [
+    dog.location,
+    dog.city,
+    dog.rescueLocation
+  ]).filter(Boolean))].sort();
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+function highlightMatch(value, query) {
+  const safeValue = escapeHTML(value);
+  const index = value.toLowerCase().indexOf(query.toLowerCase());
+  if (index === -1) return safeValue;
+
+  return `${escapeHTML(value.slice(0, index))}<strong class="text-orange-600">${escapeHTML(value.slice(index, index + query.length))}</strong>${escapeHTML(value.slice(index + query.length))}`;
+}
+
+function updateSuggestions(type) {
+  const input = document.getElementById(type === 'breed' ? 'search-input' : 'location-search-input');
+  const box = document.getElementById(type === 'breed' ? 'breed-suggestions' : 'location-suggestions');
+  const list = type === 'breed' ? breedList : locationList;
+  if (!input || !box) return;
+
+  const query = input.value.trim();
+  box.innerHTML = '';
+  if (!query) {
+    box.classList.add('hidden');
+    return;
+  }
+
+  const matches = list.filter(item => item.toLowerCase().includes(query.toLowerCase())).slice(0, 6);
+  if (!matches.length) {
+    box.classList.add('hidden');
+    return;
+  }
+
+  box.innerHTML = matches.map(item => `
+    <button type="button" class="suggestion-item" data-suggestion="${escapeHTML(item)}">
+      ${highlightMatch(item, query)}
+    </button>
+  `).join('');
+
+  box.querySelectorAll('[data-suggestion]').forEach(item => {
+    item.addEventListener('click', () => {
+      input.value = item.dataset.suggestion;
+      box.classList.add('hidden');
+      applyFilters();
+    });
+  });
+
+  box.classList.remove('hidden');
+}
+
+function closeSuggestions() {
+  document.getElementById('breed-suggestions')?.classList.add('hidden');
+  document.getElementById('location-suggestions')?.classList.add('hidden');
 }
 
 // ── Render Dogs ─────────────────────────────────────────────
