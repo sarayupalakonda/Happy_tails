@@ -566,8 +566,9 @@ async function confirmDeleteContact(id, name) {
 }
 
 function adminLogout() {
-  localStorage.removeItem('ht_token');
-  localStorage.removeItem('ht_user');
+  ['token', 'authToken', 'user', 'userInfo', 'ht_token', 'ht_user'].forEach(key => {
+    localStorage.removeItem(key);
+  });
   window.location.href = '../admin-login.html';
 }
 
@@ -625,6 +626,8 @@ function handleProfileSubmit(event) {
     role: existing.role || 'admin'
   };
 
+  localStorage.setItem('user', JSON.stringify(updated));
+  localStorage.setItem('userInfo', JSON.stringify(updated));
   localStorage.setItem('ht_user', JSON.stringify(updated));
   const adminName = document.getElementById('admin-name');
   if (adminName) adminName.textContent = updated.name || 'Admin';

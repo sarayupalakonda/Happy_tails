@@ -98,6 +98,7 @@ function initNavbar() {
   // Hamburger toggle
   const hamburger = document.getElementById('hamburger-btn');
   const mobileMenu = document.getElementById('mobile-menu');
+  ensureMobileThemeToggle();
   if (hamburger && mobileMenu) {
     hamburger.addEventListener('click', () => {
       hamburger.classList.toggle('open');
@@ -114,11 +115,12 @@ function initNavbar() {
   });
 
   // Update auth nav items
-  updateAuthNav();
+  updateNavbarAuthState();
 }
 
 // ── Auth Nav 
 function updateAuthNav() {
+  return updateNavbarAuthState();
   const token = localStorage.getItem('ht_token');
   let user = {};
   try {
@@ -142,27 +144,142 @@ function updateAuthNav() {
   const path = window.location.pathname;
   const isPublicPage = !path.includes('admin/dashboard.html') && !path.includes('admin-login.html');
   
-  if (token && user.role === 'admin' && isPublicPage) {
+  if (false && token && user.role === 'admin' && isPublicPage) {
     console.log("👮 Admin detected on public page. Redirecting to Dashboard...");
     window.location.href = 'admin/dashboard.html';
   }
 }
 
 // ── Dark Mode 
-function initDarkMode() {
-  const toggle = document.getElementById('dark-toggle');
-  if (!toggle) return;
+function parseStoredJSON(value) {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
 
-  const isDark = localStorage.getItem('ht_dark') === 'true';
-  if (isDark) document.body.classList.add('dark');
+function getStoredAuthToken() {
+  return localStorage.getItem("token") ||
+    localStorage.getItem("authToken") ||
+    localStorage.getItem("ht_token");
+}
+
+function getStoredAuthUser() {
+  return parseStoredJSON(localStorage.getItem("user")) ||
+    parseStoredJSON(localStorage.getItem("userInfo")) ||
+    parseStoredJSON(localStorage.getItem("ht_user"));
+}
+
+function clearAuthStorage() {
+  ["token", "authToken", "user", "userInfo", "ht_token", "ht_user"].forEach(key => {
+    localStorage.removeItem(key);
+  });
+}
+
+function setDisplay(el, show) {
+  if (!el) return;
+  el.style.display = show ? '' : 'none';
+}
+
+function updateNavbarAuthState() {
+  const token = getStoredAuthToken();
+  const user = getStoredAuthUser();
+  const isLoggedIn = Boolean(token && user);
+  const nav = document.querySelector('nav');
+
+  if (nav) {
+    nav.querySelectorAll('a[href="login.html"]').forEach(el => setDisplay(el, !isLoggedIn));
+    nav.querySelectorAll('a[href="register.html"]').forEach(el => setDisplay(el, !isLoggedIn));
+    ensureMobileAuthControls(nav);
+    ensureLoggedInNavContent(nav);
+  }
+
+  document.querySelectorAll('[data-auth-nav]').forEach(el => {
+    const mode = el.dataset.authNav;
+    if (mode === 'logged-out') setDisplay(el, !isLoggedIn);
+    if (mode === 'logged-in') setDisplay(el, isLoggedIn);
+    if (mode === 'admin-only') setDisplay(el, isLoggedIn && user.role === 'admin');
+  });
+
+  document.querySelectorAll('[data-nav-username], #nav-username').forEach(el => {
+    el.textContent = isLoggedIn ? (user.name || user.email || 'User').split(' ')[0] : '';
+  });
+}
+
+function ensureMobileAuthControls(nav) {
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (!mobileMenu || mobileMenu.querySelector('[data-mobile-auth-generated]')) return;
+
+  const menuBody = mobileMenu.firstElementChild || mobileMenu;
+  const panel = document.createElement('div');
+  panel.dataset.mobileAuthGenerated = 'true';
+  panel.dataset.authNav = 'logged-in';
+  panel.className = 'flex flex-col gap-2 pt-2';
+  panel.style.display = 'none';
+  panel.innerHTML = `
+    <span class="text-sm text-stone-600">Hi, <span data-nav-username class="font-semibold text-orange-500"></span>!</span>
+    <a href="admin/dashboard.html" data-auth-nav="admin-only" class="btn-primary justify-center" style="padding:0.6rem;font-size:0.85rem;display:none">Admin Panel</a>
+    <button onclick="API.logoutUser()" class="btn-secondary justify-center" style="padding:0.6rem;font-size:0.85rem">Logout</button>
+  `;
+  menuBody.appendChild(panel);
+}
+
+function ensureLoggedInNavContent(nav) {
+  nav.querySelectorAll('[data-auth-nav="logged-in"]').forEach(container => {
+    if (!container.querySelector('[data-nav-username], #nav-username')) {
+      const greeting = document.createElement('span');
+      greeting.className = 'text-sm text-stone-600';
+      greeting.innerHTML = 'Hi, <span data-nav-username class="font-semibold text-orange-500"></span>!';
+      container.insertBefore(greeting, container.firstChild);
+    }
+
+    if (!container.querySelector('[data-auth-nav="admin-only"]')) {
+      const logoutButton = Array.from(container.querySelectorAll('button')).find(btn => btn.textContent.trim().toLowerCase().includes('logout'));
+      const adminLink = document.createElement('a');
+      adminLink.href = 'admin/dashboard.html';
+      adminLink.dataset.authNav = 'admin-only';
+      adminLink.className = 'btn-primary';
+      adminLink.style.cssText = 'padding:0.55rem 1.3rem;font-size:0.85rem;display:none';
+      adminLink.textContent = 'Admin Panel';
+      container.insertBefore(adminLink, logoutButton || null);
+    }
+  });
+}
+
+function ensureMobileThemeToggle() {
+  const hamburger = document.getElementById('hamburger-btn');
+  if (!hamburger || document.getElementById('mobile-theme-toggle')) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'mobile-theme-toggle';
+  btn.dataset.themeToggle = 'true';
+  btn.className = 'md:hidden w-9 h-9 rounded-full bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-all';
+  btn.type = 'button';
+  btn.title = 'Toggle theme';
+  btn.innerHTML = '<span data-theme-icon>🌙</span>';
+  hamburger.parentNode.insertBefore(btn, hamburger);
+}
+
+updateAuthNav = updateNavbarAuthState;
+
+function initDarkMode() {
+  const toggles = document.querySelectorAll('#dark-toggle, [data-theme-toggle]');
+  if (!toggles.length) return;
+
+  const savedTheme = localStorage.getItem('theme');
+  const isDark = savedTheme ? savedTheme === 'dark' : localStorage.getItem('ht_dark') === 'true';
+  document.body.classList.toggle('dark', isDark);
   updateDarkIcon(isDark);
 
-  toggle.addEventListener('click', () => {
+  toggles.forEach(toggle => toggle.addEventListener('click', () => {
     const dark = document.body.classList.toggle('dark');
-    localStorage.setItem('ht_dark', dark);
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    localStorage.setItem('ht_dark', String(dark));
     updateDarkIcon(dark);
     showToast(dark ? 'Dark mode on 🌙' : 'Light mode on ☀️', 'info', 1800);
-  });
+  }));
 }
 
 function updateDarkIcon(isDark) {
@@ -171,6 +288,12 @@ function updateDarkIcon(isDark) {
 }
 
 // ── Modal 
+function updateDarkIcon(isDark) {
+  document.querySelectorAll('#dark-icon, [data-theme-icon]').forEach(icon => {
+    icon.textContent = isDark ? '☀️' : '🌙';
+  });
+}
+
 function openModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.add('open');
@@ -267,7 +390,9 @@ function animateCounter(el, target, duration = 1500) {
 // ── Page Init ──────────────────────────────────────────────
 function initPage() {
   // Apply dark mode on load
-  if (localStorage.getItem('ht_dark') === 'true') document.body.classList.add('dark');
+  const savedTheme = localStorage.getItem('theme');
+  const isDark = savedTheme ? savedTheme === 'dark' : localStorage.getItem('ht_dark') === 'true';
+  document.body.classList.toggle('dark', isDark);
 
   // Page enter animation
   document.body.classList.add('page-enter');
@@ -277,6 +402,8 @@ function initPage() {
 
   // Init dark mode toggle
   initDarkMode();
+
+  updateNavbarAuthState();
 
   // Init scroll animations
   setTimeout(initScrollAnimations, 100);
@@ -332,8 +459,9 @@ window.Utils = {
   showToast, showSpinner, hideSpinner, renderSkeletons,
   initScrollAnimations, initNavbar, initDarkMode,
   openModal, closeModal, renderEmpty, dogCardHTML,
-  animateCounter, initPage, updateAuthNav, goBack,
+  animateCounter, initPage, updateAuthNav, updateNavbarAuthState, clearAuthStorage, goBack,
   formatINR, formatAdoptionFee
 };
 
 window.goBack = goBack;
+window.updateNavbarAuthState = updateNavbarAuthState;

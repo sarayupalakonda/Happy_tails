@@ -16,15 +16,19 @@ const API_BASE = API_BASE_URL.replace(/\/$/, '');
 
 // ── Helpers ──────────────────────────────────────────────
 function getToken() {
-  return localStorage.getItem('ht_token');
+  return localStorage.getItem('token') ||
+    localStorage.getItem('authToken') ||
+    localStorage.getItem('ht_token');
 }
 
 function getUser() {
-  try {
-    return JSON.parse(localStorage.getItem('ht_user'));
-  } catch {
-    return null;
-  }
+  const parse = (value) => {
+    if (!value) return null;
+    try { return JSON.parse(value); } catch { return null; }
+  };
+  return parse(localStorage.getItem('user')) ||
+    parse(localStorage.getItem('userInfo')) ||
+    parse(localStorage.getItem('ht_user'));
 }
 
 function authHeaders() {
@@ -122,8 +126,13 @@ async function loginUser(email, password) {
   });
   const data = await handleResponse(res);
   if (data.token) {
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('authToken', data.token);
     localStorage.setItem('ht_token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user || {}));
+    localStorage.setItem('userInfo', JSON.stringify(data.user || {}));
     localStorage.setItem('ht_user', JSON.stringify(data.user || {}));
+    window.updateNavbarAuthState?.();
   }
   return data;
 }
@@ -136,15 +145,22 @@ async function registerUser(payload) {
   });
   const data = await handleResponse(res);
   if (data.token) {
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('authToken', data.token);
     localStorage.setItem('ht_token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user || {}));
+    localStorage.setItem('userInfo', JSON.stringify(data.user || {}));
     localStorage.setItem('ht_user', JSON.stringify(data.user || {}));
+    window.updateNavbarAuthState?.();
   }
   return data;
 }
 
 function logoutUser() {
-  localStorage.removeItem('ht_token');
-  localStorage.removeItem('ht_user');
+  ['token', 'authToken', 'user', 'userInfo', 'ht_token', 'ht_user'].forEach(key => {
+    localStorage.removeItem(key);
+  });
+  window.updateNavbarAuthState?.();
   window.location.href = 'index.html';
 }
 
