@@ -257,6 +257,8 @@ async function loadDogs() {
       return;
     }
 
+    window.adminDogsData = dogs;
+
     const fixImg = (path) => {
       if (!path) return '/assets/default-dog.jpg';
       if (path.startsWith('http') || path.startsWith('/')) return path;
@@ -277,7 +279,7 @@ async function loadDogs() {
                onerror="this.src='/assets/default-dog.jpg'"/>
           <div class="absolute top-3 right-3 flex gap-2 z-20">
             <button onclick="editDog('${dogId}')" class="w-9 h-9 rounded-xl bg-white/95 backdrop-blur shadow-sm flex items-center justify-center hover:bg-orange-500 hover:text-white transition-all transform hover:scale-110">✏️</button>
-            <button onclick="confirmDeleteDog('${dogId}', '${dog.name}')" class="w-9 h-9 rounded-xl bg-white/95 backdrop-blur shadow-sm flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:scale-110">🗑️</button>
+            <button onclick="confirmDeleteDog('${dogId}')" class="w-9 h-9 rounded-xl bg-white/95 backdrop-blur shadow-sm flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:scale-110">🗑️</button>
           </div>
           <div class="absolute bottom-3 left-3 z-10">
              <span class="px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm text-[10px] font-black uppercase tracking-wider text-stone-700 shadow-sm">
@@ -436,6 +438,8 @@ async function editDog(id) {
 }
 
 async function confirmDeleteDog(id, name) {
+  const dog = (window.adminDogsData || []).find(d => (d._id || d.id) === id);
+  name = name || dog?.name || 'this dog';
   if (confirm(`Are you sure you want to delete ${name} from the inventory? This action cannot be undone.`)) {
     try {
       const res = await API.deleteDog(id);
@@ -480,7 +484,6 @@ function renderContactsTable(contacts) {
   container.innerHTML = contacts.map(contact => {
     const date = new Date(contact.createdAt || Date.now()).toLocaleDateString();
     const shortMessage = (contact.message || '').length > 80 ? `${contact.message.slice(0, 80)}...` : (contact.message || '-');
-    const safeName = (contact.name || 'this contact').replace(/'/g, "\\'");
     return `
     <tr class="hover:bg-orange-50/50 transition-colors border-b border-stone-50 last:border-0">
       <td class="py-4 px-4 font-bold text-stone-800">${contact.name || '-'}</td>
@@ -495,7 +498,7 @@ function renderContactsTable(contacts) {
       <td class="py-4 px-4 text-stone-400 text-sm">${date}</td>
       <td class="py-4 px-4 text-right whitespace-nowrap">
         <button onclick="openContactModal('${contact._id}')" class="admin-btn bg-stone-100 text-stone-600 hover:bg-stone-200 mr-2">View</button>
-        <button onclick="confirmDeleteContact('${contact._id}', '${safeName}')" class="admin-btn admin-btn-danger">Delete</button>
+        <button onclick="confirmDeleteContact('${contact._id}')" class="admin-btn admin-btn-danger">Delete</button>
       </td>
     </tr>
   `;
@@ -512,8 +515,6 @@ function openContactModal(id) {
   const title = modal.querySelector("h2");
   if (title) title.textContent = "Contact Details";
   const date = new Date(contact.createdAt || Date.now()).toLocaleString();
-  const safeName = (contact.name || 'this contact').replace(/'/g, "\\'");
-
   content.innerHTML = `
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-100 mb-6">
       <p class="text-xs text-stone-400 font-bold uppercase tracking-widest mb-1">Contact Message</p>
@@ -540,7 +541,7 @@ function openContactModal(id) {
     </div>
     <div class="mt-6 flex justify-end gap-3 bg-white p-4 rounded-2xl shadow-sm border border-stone-100">
       <button onclick="closeModal()" class="admin-btn bg-stone-100 text-stone-600 hover:bg-stone-200">Close</button>
-      <button onclick="confirmDeleteContact('${id}', '${safeName}'); closeModal();" class="admin-btn admin-btn-danger">Delete</button>
+      <button onclick="confirmDeleteContact('${id}'); closeModal();" class="admin-btn admin-btn-danger">Delete</button>
     </div>
   `;
 
@@ -554,6 +555,8 @@ function openContactModal(id) {
 }
 
 async function confirmDeleteContact(id, name) {
+  const contact = (window.contactsData || []).find(c => c._id === id);
+  name = name || contact?.name || 'this contact';
   if (!confirm(`Delete contact message from ${name}?`)) return;
 
   try {
