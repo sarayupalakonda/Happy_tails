@@ -178,6 +178,14 @@ function clearAuthStorage() {
   });
 }
 
+function requireLogin(redirectUrl = window.location.href) {
+  if (getStoredAuthToken()) return true;
+
+  localStorage.setItem("redirectAfterLogin", redirectUrl);
+  window.location.href = "login.html";
+  return false;
+}
+
 function setDisplay(el, show) {
   if (!el) return;
   el.style.display = show ? '' : 'none';
@@ -250,7 +258,24 @@ function ensureLoggedInNavContent(nav) {
 
 function ensureMobileThemeToggle() {
   const hamburger = document.getElementById('hamburger-btn');
-  if (!hamburger || document.getElementById('mobile-theme-toggle')) return;
+  if (!hamburger) return;
+
+  const nav = hamburger.closest('nav');
+  if (nav) nav.classList.add('has-mobile-actions');
+
+  const desktopThemeToggle = nav ? nav.querySelector('#dark-toggle') : null;
+  const desktopActions = desktopThemeToggle ? desktopThemeToggle.closest('.flex.items-center.gap-3') : null;
+  if (desktopActions) desktopActions.classList.add('desktop-nav-actions');
+
+  let actions = hamburger.closest('.mobile-nav-actions');
+  if (!actions) {
+    actions = document.createElement('div');
+    actions.className = 'mobile-nav-actions md:hidden';
+    hamburger.parentNode.insertBefore(actions, hamburger);
+    actions.appendChild(hamburger);
+  }
+
+  if (document.getElementById('mobile-theme-toggle')) return;
 
   const btn = document.createElement('button');
   btn.id = 'mobile-theme-toggle';
@@ -259,7 +284,7 @@ function ensureMobileThemeToggle() {
   btn.type = 'button';
   btn.title = 'Toggle theme';
   btn.innerHTML = '<span data-theme-icon>🌙</span>';
-  hamburger.parentNode.insertBefore(btn, hamburger);
+  actions.insertBefore(btn, hamburger);
 }
 
 updateAuthNav = updateNavbarAuthState;
@@ -459,9 +484,10 @@ window.Utils = {
   showToast, showSpinner, hideSpinner, renderSkeletons,
   initScrollAnimations, initNavbar, initDarkMode,
   openModal, closeModal, renderEmpty, dogCardHTML,
-  animateCounter, initPage, updateAuthNav, updateNavbarAuthState, clearAuthStorage, goBack,
+  animateCounter, initPage, updateAuthNav, updateNavbarAuthState, clearAuthStorage, requireLogin, goBack,
   formatINR, formatAdoptionFee
 };
 
 window.goBack = goBack;
 window.updateNavbarAuthState = updateNavbarAuthState;
+window.requireLogin = requireLogin;

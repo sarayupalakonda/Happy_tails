@@ -137,15 +137,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (API.getToken()) {
     const user = API.getUser();
     Utils.showToast('You are already logged in! 🐾', 'info');
-    setTimeout(() => {
-      if (user && user.role === 'admin') {
-        window.location.href = 'admin/dashboard.html';
-      } else {
-        window.location.href = 'index.html';
-      }
-    }, 1500);
+    setTimeout(() => continueAfterLogin(user), 1500);
   }
 });
+
+function continueAfterLogin(user) {
+  const redirectUrl = localStorage.getItem('redirectAfterLogin');
+
+  if (user && user.role === 'admin') {
+    localStorage.removeItem('redirectAfterLogin');
+    window.location.href = 'admin/dashboard.html';
+    return;
+  }
+
+  if (redirectUrl) {
+    localStorage.removeItem('redirectAfterLogin');
+    window.location.href = redirectUrl;
+    return;
+  }
+
+  window.location.href = 'index.html';
+}
 
 // ── Password Toggle ─────────────────────────────────────────
 function togglePassword(inputId, btn) {
@@ -207,13 +219,7 @@ async function handleLogin(e) {
     await API.loginUser(email, password);
     const user = API.getUser();
     Utils.showToast('Welcome back to Happy Tails! 🐾', 'success');
-    setTimeout(() => {
-      if (user && user.role === 'admin') {
-        window.location.href = 'admin/dashboard.html';
-      } else {
-        window.location.href = 'index.html';
-      }
-    }, 1500);
+    setTimeout(() => continueAfterLogin(user), 1500);
   } catch (err) {
     Utils.showToast(err.message || 'Login failed. Check your credentials.', 'error');
     setInputState('login-email','error');

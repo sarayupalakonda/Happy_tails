@@ -309,7 +309,9 @@ function renderDog(dog) {
 
   // Adopt Button
   document.getElementById('adopt-btn').onclick = () => {
-    window.location.href = `adopt.html?id=${dog._id || dog.id}&name=${encodeURIComponent(dog.name)}`;
+    const adoptUrl = `adopt.html?id=${dog._id || dog.id}&name=${encodeURIComponent(dog.name)}`;
+    if (!Utils.requireLogin(adoptUrl)) return;
+    window.location.href = adoptUrl;
   };
 
   const favoriteBtn = document.getElementById('favorite-btn');

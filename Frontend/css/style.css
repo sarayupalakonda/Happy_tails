@@ -68,8 +68,9 @@ nav a[href="index.html"].font-bold span,
 
 /* Hero */
 .hero-bg { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 35%, #fed7aa 70%, #fdba74 100%); position: relative; overflow: hidden; }
-.hero-bg::before { content: ''; position: absolute; top: -40%; right: -15%; width: 550px; height: 550px; background: radial-gradient(circle, rgba(251,146,60,0.22) 0%, transparent 70%); animation: floatBlob 8s ease-in-out infinite alternate; }
-.hero-bg::after { content: ''; position: absolute; bottom: -25%; left: -8%; width: 380px; height: 380px; background: radial-gradient(circle, rgba(253,186,116,0.28) 0%, transparent 70%); animation: floatBlob 10s ease-in-out infinite alternate-reverse; }
+.hero-bg::before { content: ''; position: absolute; top: -40%; right: -15%; width: 550px; height: 550px; background: radial-gradient(circle, rgba(251,146,60,0.22) 0%, transparent 70%); animation: floatBlob 8s ease-in-out infinite alternate; pointer-events: none; }
+.hero-bg::after { content: ''; position: absolute; bottom: -25%; left: -8%; width: 380px; height: 380px; background: radial-gradient(circle, rgba(253,186,116,0.28) 0%, transparent 70%); animation: floatBlob 10s ease-in-out infinite alternate-reverse; pointer-events: none; }
+.hero-bg > * { position: relative; z-index: 1; }
 @keyframes floatBlob { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(28px,18px) scale(1.08); } }
 @keyframes heroFloat { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-12px) rotate(2deg); } }
 .hero-img { animation: heroFloat 5s ease-in-out infinite; }
@@ -463,6 +464,19 @@ textarea.form-input {
 .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
 .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+.mobile-nav-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+@media (min-width: 768px) {
+  .mobile-nav-actions {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  nav.has-mobile-actions .desktop-nav-actions {
+    display: none !important;
+  }
+}
 
 #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1); }
 #mobile-menu.open { max-height: 400px; }

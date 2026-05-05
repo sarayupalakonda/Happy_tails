@@ -43,6 +43,8 @@
     <div class="hidden md:flex items-center gap-8">
       <a href="index.html"  class="nav-link text-stone-600 hover:text-orange-500">Home</a>
       <a href="dogs.html"   class="nav-link text-stone-600 hover:text-orange-500">Find Dogs</a>
+      <a href="about.html"  class="nav-link text-stone-600 hover:text-orange-500">About</a>
+      <a href="contact.html" class="nav-link text-stone-600 hover:text-orange-500">Contact</a>
     </div>
     <div class="flex items-center gap-3">
       <button id="dark-toggle" class="w-9 h-9 rounded-full bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-all">
@@ -64,6 +66,12 @@
     <div class="flex flex-col gap-3 pt-4 pb-2 px-2 border-t border-orange-100 mt-3">
       <a href="index.html" class="nav-link text-stone-700 font-medium py-2">🏠 Home</a>
       <a href="dogs.html"  class="nav-link text-stone-700 font-medium py-2">🐕 Find Dogs</a>
+      <a href="about.html"  class="nav-link text-stone-700 font-medium py-2">ℹ️ About</a>
+      <a href="contact.html" class="nav-link text-stone-700 font-medium py-2">📬 Contact</a>
+      <div class="flex gap-2 pt-2">
+        <a href="login.html" class="btn-secondary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Login</a>
+        <a href="register.html" class="btn-primary flex-1 justify-center" style="padding:0.6rem;font-size:0.85rem">Sign Up</a>
+      </div>
     </div>
   </div>
 </nav>
@@ -109,6 +117,7 @@
   </div>
 
   <form id="adoption-form" onsubmit="handleSubmit(event)" novalidate>
+    <div class="form-step active" id="step-1">
 
     <!-- ── SECTION 1: Personal Info ── -->
     <div id="section-1" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm mb-6 fade-in">
@@ -153,6 +162,12 @@
       </div>
     </div>
 
+      <div class="step-actions">
+        <button type="button" onclick="nextStep()" class="btn-primary justify-center">Next</button>
+      </div>
+    </div>
+
+    <div class="form-step" id="step-2">
     <!-- ── SECTION 2: Home Info ── -->
     <div id="section-2" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm mb-6 fade-in">
       <h3 class="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
@@ -224,6 +239,13 @@
       </div>
     </div>
 
+      <div class="step-actions">
+        <button type="button" onclick="prevStep()" class="btn-secondary justify-center">Back</button>
+        <button type="button" onclick="nextStep()" class="btn-primary justify-center">Next</button>
+      </div>
+    </div>
+
+    <div class="form-step" id="step-3">
     <!-- ── SECTION 3: Lifestyle ── -->
     <div id="section-3" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm mb-6 fade-in">
       <h3 class="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
@@ -286,28 +308,48 @@
       <p class="err-msg text-red-500 text-xs mt-2 hidden" id="err-agree"></p>
     </div>
 
+    <div class="step-actions mb-4">
+      <button type="button" onclick="prevStep()" class="btn-secondary justify-center">Back</button>
+    </div>
+
     <!-- Submit Button -->
     <button id="submit-btn" type="submit" class="btn-primary w-full justify-center text-lg" style="padding:1.1rem">
       <span id="submit-text">🐾 Submit Adoption Application</span>
       <span id="submit-spinner" class="hidden" style="width:20px;height:20px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block"></span>
     </button>
     <p class="text-center text-stone-400 text-sm mt-3">We'll respond within 24–48 hours 🐾</p>
+    </div>
   </form>
 </main>
 
 <div id="public-footer"></div>
 
 <style>
+  .form-step { display: none; }
+  .form-step.active { display: block; }
   .step-indicator { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .step-indicator:not(.active) > div { background-color: #e7e5e4 !important; color: #78716c !important; }
+  .step-indicator:not(.active) > span { color: #a8a29e !important; font-weight: 500 !important; }
+  .step-indicator.active > div { background-color: #f97316 !important; color: #fff !important; }
+  .step-indicator.active > span { color: #f97316 !important; font-weight: 600 !important; }
+  .step-actions { display:flex; justify-content:flex-end; gap:1rem; margin-bottom:1.5rem; }
   body.dark .bg-white { background-color: #1c1917 !important; }
   body.dark .bg-orange-50 { background-color: #0f0e0d !important; }
   body.dark .border-orange-100 { border-color: #292524 !important; }
+  @media (max-width: 640px) {
+    .step-actions { flex-direction:column; }
+    .step-actions .btn-primary,
+    .step-actions .btn-secondary { width:100%; }
+  }
 </style>
 
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
 <script src="js/footer.js"></script>
 <script>
+let currentStep = 1;
+const totalSteps = 3;
+
 document.addEventListener('DOMContentLoaded', () => {
   Utils.initPage();
 
@@ -317,9 +359,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 150);
 
   // Redirect if not logged in
-  if (!API.getToken()) {
+  if (!Utils.requireLogin()) {
     Utils.showToast('Please login to submit an adoption request 🐾', 'warning');
-    setTimeout(() => window.location.href = 'login.html', 1800);
     return;
   }
 
@@ -334,7 +375,96 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (dogId) loadDogBanner(dogId);
+  showStep(currentStep);
 });
+
+function showStep(step) {
+  currentStep = step;
+
+  document.querySelectorAll(".form-step").forEach((el, index) => {
+    el.classList.remove("active");
+    if (index === step - 1) {
+      el.classList.add("active");
+    }
+  });
+
+  document.querySelectorAll(".step-indicator").forEach((el, index) => {
+    el.classList.remove("active");
+    if (index === step - 1) {
+      el.classList.add("active");
+    }
+  });
+}
+
+function nextStep() {
+  if (!validateStep(currentStep)) return;
+
+  if (currentStep < totalSteps) {
+    currentStep++;
+    showStep(currentStep);
+    document.getElementById('adoption-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) {
+    currentStep--;
+    showStep(currentStep);
+    document.getElementById('adoption-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function validateStep(step) {
+  const stepEl = document.getElementById(`step-${step}`);
+  stepEl?.querySelectorAll('.err-msg').forEach(el => el.classList.add('hidden'));
+  stepEl?.querySelectorAll('.form-input').forEach(el => el.classList.remove('error','success'));
+
+  let valid = true;
+
+  if (step === 1) {
+    const fname = document.getElementById('f-fname').value.trim();
+    const lname = document.getElementById('f-lname').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const address = document.getElementById('f-address').value.trim();
+
+    valid = validate('fname', fname.length >= 2, 'Please enter your first name') && valid;
+    valid = validate('lname', lname.length >= 2, 'Please enter your last name') && valid;
+    valid = validate('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), 'Enter a valid email address') && valid;
+    valid = validate('phone', phone.length >= 7, 'Enter a valid phone number') && valid;
+    valid = validate('address', address.length >= 5, 'Please enter your home address') && valid;
+  }
+
+  if (step === 2) {
+    valid = validate('home-type', document.getElementById('f-home-type').value !== '', 'Please select your home type') && valid;
+    valid = validate('own-rent', document.getElementById('f-own-rent').value !== '', 'Please select own or rent') && valid;
+  }
+
+  if (step === 3) {
+    const why = document.getElementById('f-why').value.trim();
+    valid = validate('experience', document.getElementById('f-experience').value !== '', 'Please select your experience level') && valid;
+    valid = validate('activity', document.getElementById('f-activity').value !== '', 'Please select your activity level') && valid;
+    valid = validate('why', why.length >= 30, 'Please write at least 30 characters') && valid;
+
+    if (!document.getElementById('f-agree').checked) {
+      const el = document.getElementById('err-agree');
+      if (el) { el.textContent = 'You must agree to the adoption terms'; el.classList.remove('hidden'); }
+      valid = false;
+    }
+  }
+
+  if (!valid) {
+    Utils.showToast('Please fix the errors above 👆', 'error');
+    stepEl?.querySelector('.err-msg:not(.hidden)')?.closest('.input-group, .bg-orange-50')?.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  return valid;
+}
+
+window.showStep = showStep;
+window.nextStep = nextStep;
+window.prevStep = prevStep;
+window.validateStep = validateStep;
 
 async function loadDogBanner(id) {
   try {
@@ -370,6 +500,11 @@ function validate(id, condition, msg) {
 // ── Submit Handler ────────────────────────────────────────────
 async function handleSubmit(e) {
   e.preventDefault();
+
+  if (currentStep !== totalSteps) {
+    nextStep();
+    return;
+  }
 
   // Clear errors
   document.querySelectorAll('.err-msg').forEach(el => el.classList.add('hidden'));
